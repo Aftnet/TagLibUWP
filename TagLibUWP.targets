@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <TagLibUWP-Platform Condition="'$(Platform)' == 'Win32'">x86</TagLibUWP-Platform>
+        <TagLibUWP-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</TagLibUWP-Platform>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'UAP'">
+        <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\TagLibUWP.winmd">
+            <Implementation>TagLibUWP.dll</Implementation>
+        </Reference>
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(TagLibUWP-Platform)\native\TagLibUWP.dll" />
+    </ItemGroup>
+</Project>

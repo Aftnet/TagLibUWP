@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>cd319f00-5b66-4cca-8aeb-c851a9e9d753</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AudioFileInfo.cpp" />
+    <ClCompile Include="AudioPropertiesRT.cpp" />
+    <ClCompile Include="TagManager.cpp" />
+    <ClCompile Include="TagRT.cpp" />
+    <ClCompile Include="FileStreamRT.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AudioFileInfo.h" />
+    <ClInclude Include="AudioPropertiesRT.h" />
+    <ClInclude Include="TagManager.h" />
+    <ClInclude Include="TagRT.h" />
+    <ClInclude Include="FileStreamRT.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+</Project>
