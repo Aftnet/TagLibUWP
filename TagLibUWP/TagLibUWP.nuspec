@@ -13,22 +13,22 @@
     <description>Port of the native TagLib library to UWP component</description>
     <releaseNotes>Prerelease</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>taglib id3lib id3 aac mp3 mp4 m4a ogg flac tag winrt</tags>
+    <tags>taglib id3lib id3 aac mp3 mp4 m4a ogg flac tag winrt c++ native</tags>
   </metadata>
   <files>
         <!-- WinMd and IntelliSense files -->
-        <file src="$configuration$\TagLibUWP\TagLibUWP.winmd" target="lib\uap10.0"/>
-        <file src="$configuration$\TagLibUWP\TagLibUWP.xml" target="lib\uap10.0"/>
+        <file src="..\$configuration$\TagLibUWP\TagLibUWP.winmd" target="lib\uap10.0"/>
+        <file src="..\$configuration$\TagLibUWP\TagLibUWP.xml" target="lib\uap10.0"/>
 
         <!-- DLLs and resources -->
-        <file src="ARM\$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-arm\native"/>
-        <file src="ARM\$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-arm\native"/>
+        <file src="..\ARM\$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-arm\native"/>
+        <file src="..\ARM\$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-arm\native"/>
 
-        <file src="x64\$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-x64\native"/>
-        <file src="x64\$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-x64\native"/>
+        <file src="..\x64\$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-x64\native"/>
+        <file src="..\x64\$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-x64\native"/>
 
-        <file src="$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-x86\native"/>
-        <file src="$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-x86\native"/>
+        <file src="..\$configuration$\TagLibUWP\TagLibUWP.dll" target="runtimes\win10-x86\native"/>
+        <file src="..\$configuration$\TagLibUWP\TagLibUWP.pri" target="runtimes\win10-x86\native"/>
 
         <!-- .targets -->
         <file src="TagLibUWP.targets" target="build\native"/>
