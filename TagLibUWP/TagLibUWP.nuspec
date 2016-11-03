@@ -6,11 +6,11 @@
     <title>TagLib UWP</title>
     <authors>Alberto Fustinoni</authors>
     <owners>Alberto Fustinoni</owners>
-    <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
-    <projectUrl>https://github.com/albertofustinoni/TagLib.UWP</projectUrl>
+    <licenseUrl>https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt</licenseUrl>
+    <projectUrl>https://github.com/albertofustinoni/TagLibUWP</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/timheuer/taglib-sharp-portable/master/nuget/taglib.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Port of the native TagLib library to UWP component</description>
+    <description>TagLib port to WinRT component</description>
     <releaseNotes>Prerelease</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>taglib id3lib id3 aac mp3 mp4 m4a ogg flac tag winrt c++ native</tags>
