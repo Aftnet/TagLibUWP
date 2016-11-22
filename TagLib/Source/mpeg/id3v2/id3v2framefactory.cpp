@@ -60,7 +60,7 @@ namespace
 
     for(StringList::ConstIterator it = fields.begin(); it != fields.end(); ++it) {
       String s = *it;
-      int end = s.find(")");
+      size_t end = s.find(")");
 
       if(s.startsWith("(") && end > 0) {
         // "(12)Genre"
@@ -113,19 +113,7 @@ FrameFactory *FrameFactory::instance()
   return &factory;
 }
 
-Frame *FrameFactory::createFrame(const ByteVector &data, bool synchSafeInts) const
-{
-  return createFrame(data, static_cast<unsigned int>(synchSafeInts ? 4 : 3));
-}
-
-Frame *FrameFactory::createFrame(const ByteVector &data, unsigned int version) const
-{
-  Header tagHeader;
-  tagHeader.setMajorVersion(version);
-  return createFrame(data, &tagHeader);
-}
-
-Frame *FrameFactory::createFrame(const ByteVector &origData, Header *tagHeader) const
+Frame *FrameFactory::createFrame(const ByteVector &origData, const Header *tagHeader) const
 {
   ByteVector data = origData;
   unsigned int version = tagHeader->majorVersion();
@@ -198,8 +186,8 @@ Frame *FrameFactory::createFrame(const ByteVector &origData, Header *tagHeader) 
 
   // Text Identification (frames 4.2)
 
-  // Apple proprietary WFED (Podcast URL) is in fact a text frame.
-  if(frameID.startsWith("T") || frameID == "WFED") {
+  // Apple proprietary WFED (Podcast URL), MVNM (Movement Name), MVIN (Movement Number) are in fact text frames.
+  if(frameID.startsWith("T") || frameID == "WFED" || frameID == "MVNM" || frameID == "MVIN") {
 
     TextIdentificationFrame *f = frameID != "TXXX"
       ? new TextIdentificationFrame(data, header)
@@ -456,6 +444,8 @@ namespace
     { "TDS", "TDES" },
     { "TID", "TGID" },
     { "WFD", "WFED" },
+    { "MVN", "MVNM" },
+    { "MVI", "MVIN" },
   };
   const size_t frameConversion2Size = sizeof(frameConversion2) / sizeof(frameConversion2[0]);
 

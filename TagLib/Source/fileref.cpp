@@ -30,7 +30,7 @@
 #include <tfile.h>
 #include <tstring.h>
 #include <tdebug.h>
-#include <trefcounter.h>
+#include <tsmartptr.h>
 
 #include "fileref.h"
 #include "asffile.h"
@@ -51,6 +51,7 @@
 #include "s3mfile.h"
 #include "itfile.h"
 #include "xmfile.h"
+#include "dsffile.h"
 
 using namespace TagLib;
 
@@ -118,14 +119,14 @@ namespace
       return file;
 
 #ifdef _WIN32
-    const String s = toFileName(arg).toString();
+    const String s(toFileName(arg).wstr());
 #else
     const String s(toFileName(arg));
 #endif
 
     String ext;
-    const int pos = s.rfind(".");
-    if(pos != -1)
+    const size_t pos = s.rfind(".");
+    if(pos != String::npos())
       ext = s.substr(pos + 1).upper();
 
     // If this list is updated, the method defaultFileExtensions() should also be
@@ -148,7 +149,7 @@ namespace
       return new Ogg::Vorbis::File(arg, readAudioProperties, audioPropertiesStyle);
     }
     if(ext == "FLAC")
-      return new FLAC::File(arg, ID3v2::FrameFactory::instance(), readAudioProperties, audioPropertiesStyle);
+      return new FLAC::File(arg, readAudioProperties, audioPropertiesStyle);
     if(ext == "MPC")
       return new MPC::File(arg, readAudioProperties, audioPropertiesStyle);
     if(ext == "WV")
@@ -178,23 +179,23 @@ namespace
       return new IT::File(arg, readAudioProperties, audioPropertiesStyle);
     if(ext == "XM")
       return new XM::File(arg, readAudioProperties, audioPropertiesStyle);
+    if (ext == "DSF")
+      return new DSF::File(arg, readAudioProperties, audioPropertiesStyle);
 
     return 0;
   }
 }
 
-class FileRef::FileRefPrivate : public RefCounter
+class FileRef::FileRefPrivate
 {
 public:
+  FileRefPrivate() :
+    file() {}
+
   FileRefPrivate(File *f) :
-    RefCounter(),
     file(f) {}
 
-  ~FileRefPrivate() {
-    delete file;
-  }
-
-  File *file;
+  SHARED_PTR<File> file;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -202,7 +203,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 
 FileRef::FileRef() :
-  d(new FileRefPrivate(0))
+  d(new FileRefPrivate())
 {
 }
 
@@ -223,15 +224,13 @@ FileRef::FileRef(File *file) :
 }
 
 FileRef::FileRef(const FileRef &ref) :
-  d(ref.d)
+  d(new FileRefPrivate(*ref.d))
 {
-  d->ref();
 }
 
 FileRef::~FileRef()
 {
-  if(d->deref())
-    delete d;
+  delete d;
 }
 
 Tag *FileRef::tag() const
@@ -241,6 +240,36 @@ Tag *FileRef::tag() const
     return 0;
   }
   return d->file->tag();
+}
+
+PropertyMap FileRef::properties() const
+{
+  if(isNull()) {
+    debug("FileRef::properties() - Called without a valid file.");
+    return PropertyMap();
+  }
+
+  return d->file->properties();
+}
+
+void FileRef::removeUnsupportedProperties(const StringList& properties)
+{
+  if(isNull()) {
+    debug("FileRef::removeUnsupportedProperties() - Called without a valid file.");
+    return;
+  }
+
+  d->file->removeUnsupportedProperties(properties);
+}
+
+PropertyMap FileRef::setProperties(const PropertyMap &properties)
+{
+  if(isNull()) {
+    debug("FileRef::setProperties() - Called without a valid file.");
+    return PropertyMap();
+  }
+
+  return d->file->setProperties(properties);
 }
 
 AudioProperties *FileRef::audioProperties() const
@@ -254,7 +283,7 @@ AudioProperties *FileRef::audioProperties() const
 
 File *FileRef::file() const
 {
-  return d->file;
+  return d->file.get();
 }
 
 bool FileRef::save()
@@ -304,13 +333,19 @@ StringList FileRef::defaultFileExtensions()
   l.append("s3m");
   l.append("it");
   l.append("xm");
+  l.append("dsf");
 
   return l;
 }
 
+bool FileRef::isValid() const
+{
+  return (d->file && d->file->isValid());
+}
+
 bool FileRef::isNull() const
 {
-  return (!d->file || !d->file->isValid());
+  return !isValid();
 }
 
 FileRef &FileRef::operator=(const FileRef &ref)
@@ -334,10 +369,4 @@ bool FileRef::operator==(const FileRef &ref) const
 bool FileRef::operator!=(const FileRef &ref) const
 {
   return (ref.d->file != d->file);
-}
-
-File *FileRef::create(FileName fileName, bool readAudioProperties,
-                      AudioProperties::ReadStyle audioPropertiesStyle) // static
-{
-  return createInternal(fileName, readAudioProperties, audioPropertiesStyle);
 }

@@ -33,13 +33,13 @@
 
 using namespace TagLib;
 
-long Utils::findID3v1(File *file)
+long long Utils::findID3v1(File *file)
 {
   if(!file->isValid())
     return -1;
 
   file->seek(-128, File::End);
-  const long p = file->tell();
+  const long long p = file->tell();
 
   if(file->readBlock(3) == ID3v1::Tag::fileIdentifier())
     return p;
@@ -47,7 +47,7 @@ long Utils::findID3v1(File *file)
   return -1;
 }
 
-long Utils::findID3v2(File *file)
+long long Utils::findID3v2(File *file)
 {
   if(!file->isValid())
     return -1;
@@ -60,7 +60,7 @@ long Utils::findID3v2(File *file)
   return -1;
 }
 
-long Utils::findAPE(File *file, long id3v1Location)
+long long Utils::findAPE(File *file, long long id3v1Location)
 {
   if(!file->isValid())
     return -1;
@@ -70,7 +70,7 @@ long Utils::findAPE(File *file, long id3v1Location)
   else
     file->seek(-32, File::End);
 
-  const long p = file->tell();
+  const long long p = file->tell();
 
   if(file->readBlock(8) == APE::Tag::fileIdentifier())
     return p;

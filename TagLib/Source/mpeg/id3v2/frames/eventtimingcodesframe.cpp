@@ -98,7 +98,7 @@ void EventTimingCodesFrame::setSynchedEvents(
 
 void EventTimingCodesFrame::parseFields(const ByteVector &data)
 {
-  const int end = data.size();
+  const size_t end = data.size();
   if(end < 1) {
     debug("An event timing codes frame must contain at least 1 byte.");
     return;
@@ -106,11 +106,11 @@ void EventTimingCodesFrame::parseFields(const ByteVector &data)
 
   d->timestampFormat = TimestampFormat(data[0]);
 
-  int pos = 1;
+  size_t pos = 1;
   d->synchedEvents.clear();
   while(pos + 4 < end) {
     EventType type = static_cast<EventType>(static_cast<unsigned char>(data[pos++]));
-    unsigned int time = data.toUInt(pos, true);
+    unsigned int time = data.toUInt32BE(pos);
     pos += 4;
     d->synchedEvents.append(SynchedEvent(time, type));
   }
@@ -126,7 +126,7 @@ ByteVector EventTimingCodesFrame::renderFields() const
       ++it) {
     const SynchedEvent &entry = *it;
     v.append(char(entry.type));
-    v.append(ByteVector::fromUInt(entry.time));
+    v.append(ByteVector::fromUInt32BE(entry.time));
   }
 
   return v;

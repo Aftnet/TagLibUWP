@@ -110,6 +110,16 @@
     <ClCompile Include="Source\tag.cpp" />
     <ClCompile Include="Source\tagunion.cpp" />
     <ClCompile Include="Source\tagutils.cpp" />
+    <ClCompile Include="Source\dsf\dsffile.cpp" />
+    <ClCompile Include="Source\dsf\dsfproperties.cpp" />
+    <ClCompile Include="Source\ebml\matroska\ebmlmatroskaaudio.cpp" />
+    <ClCompile Include="Source\ebml\matroska\ebmlmatroskafile.cpp" />
+    <ClCompile Include="Source\ebml\ebmlelement.cpp" />
+    <ClCompile Include="Source\ebml\ebmlfile.cpp" />
+    <ClCompile Include="Source\toolkit\taglib.cpp" />
+    <ClCompile Include="Source\toolkit\tpicture.cpp" />
+    <ClCompile Include="Source\toolkit\tpicturemap.cpp" />
+    <ClCompile Include="Source\toolkit\tstringhandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
@@ -222,10 +232,21 @@
     <ClInclude Include="Source\audioproperties.h" />
     <ClInclude Include="Source\fileref.h" />
     <ClInclude Include="Source\tag.h" />
-    <ClInclude Include="Source\taglib_config.h" />
     <ClInclude Include="Source\taglib_export.h" />
     <ClInclude Include="Source\tagunion.h" />
     <ClInclude Include="Source\tagutils.h" />
+    <ClInclude Include="Source\dsf\dsffile.h" />
+    <ClInclude Include="Source\dsf\dsfproperties.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskaaudio.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskaconstants.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskafile.h" />
+    <ClInclude Include="Source\ebml\ebmlconstants.h" />
+    <ClInclude Include="Source\ebml\ebmlelement.h" />
+    <ClInclude Include="Source\ebml\ebmlfile.h" />
+    <ClInclude Include="Source\toolkit\tpicture.h" />
+    <ClInclude Include="Source\toolkit\tpicturemap.h" />
+    <ClInclude Include="Source\toolkit\tsmartptr.h" />
+    <ClInclude Include="Source\toolkit\tstringhandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\toolkit\tlist.tcc" />

@@ -30,7 +30,7 @@
 
 using namespace TagLib;
 
-class RIFF::AIFF::Properties::PropertiesPrivate
+class RIFF::AIFF::AudioProperties::PropertiesPrivate
 {
 public:
   PropertiesPrivate() :
@@ -57,81 +57,79 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-RIFF::AIFF::Properties::Properties(const ByteVector &, ReadStyle style) :
-  AudioProperties(style),
-  d(new PropertiesPrivate())
-{
-  debug("RIFF::AIFF::Properties::Properties() - This constructor is no longer used.");
-}
-
-RIFF::AIFF::Properties::Properties(File *file, ReadStyle style) :
-  AudioProperties(style),
+RIFF::AIFF::AudioProperties::AudioProperties(File *file, ReadStyle) :
+  TagLib::AudioProperties(),
   d(new PropertiesPrivate())
 {
   read(file);
 }
 
-RIFF::AIFF::Properties::~Properties()
+RIFF::AIFF::AudioProperties::~AudioProperties()
 {
   delete d;
 }
 
-int RIFF::AIFF::Properties::length() const
+bool RIFF::AIFF::AudioProperties::isNull() const
+{
+  return (d == 0);
+}
+
+int RIFF::AIFF::AudioProperties::length() const
 {
   return lengthInSeconds();
 }
 
-int RIFF::AIFF::Properties::lengthInSeconds() const
+int RIFF::AIFF::AudioProperties::lengthInSeconds() const
 {
   return d->length / 1000;
 }
 
-int RIFF::AIFF::Properties::lengthInMilliseconds() const
+int RIFF::AIFF::AudioProperties::lengthInMilliseconds() const
 {
   return d->length;
 }
 
-int RIFF::AIFF::Properties::bitrate() const
+int RIFF::AIFF::AudioProperties::bitrate() const
 {
   return d->bitrate;
 }
 
-int RIFF::AIFF::Properties::sampleRate() const
+int RIFF::AIFF::AudioProperties::sampleRate() const
 {
   return d->sampleRate;
 }
 
-int RIFF::AIFF::Properties::channels() const
+int RIFF::AIFF::AudioProperties::channels() const
 {
   return d->channels;
 }
 
-int RIFF::AIFF::Properties::bitsPerSample() const
+int RIFF::AIFF::AudioProperties::bitsPerSample() const
 {
   return d->bitsPerSample;
 }
 
-int RIFF::AIFF::Properties::sampleWidth() const
+int RIFF::AIFF::AudioProperties::sampleWidth() const
 {
   return bitsPerSample();
 }
 
-unsigned int RIFF::AIFF::Properties::sampleFrames() const
+unsigned int RIFF::AIFF::AudioProperties::sampleFrames() const
 {
   return d->sampleFrames;
 }
 
-bool RIFF::AIFF::Properties::isAiffC() const
+bool RIFF::AIFF::AudioProperties::isAiffC() const
 {
   return (!d->compressionType.isEmpty());
 }
 
-ByteVector RIFF::AIFF::Properties::compressionType() const
+ByteVector RIFF::AIFF::AudioProperties::compressionType() const
 {
   return d->compressionType;
 }
 
-String RIFF::AIFF::Properties::compressionName() const
+String RIFF::AIFF::AudioProperties::compressionName() const
 {
   return d->compressionName;
 }
@@ -140,7 +138,7 @@ String RIFF::AIFF::Properties::compressionName() const
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void RIFF::AIFF::Properties::read(File *file)
+void RIFF::AIFF::AudioProperties::read(File *file)
 {
   ByteVector data;
   unsigned int streamLength = 0;
@@ -150,29 +148,29 @@ void RIFF::AIFF::Properties::read(File *file)
       if(data.isEmpty())
         data = file->chunkData(i);
       else
-        debug("RIFF::AIFF::Properties::read() - Duplicate 'COMM' chunk found.");
+        debug("RIFF::AIFF::AudioProperties::read() - Duplicate 'COMM' chunk found.");
     }
     else if(name == "SSND") {
       if(streamLength == 0)
         streamLength = file->chunkDataSize(i) + file->chunkPadding(i);
       else
-        debug("RIFF::AIFF::Properties::read() - Duplicate 'SSND' chunk found.");
+        debug("RIFF::AIFF::AudioProperties::read() - Duplicate 'SSND' chunk found.");
     }
   }
 
   if(data.size() < 18) {
-    debug("RIFF::AIFF::Properties::read() - 'COMM' chunk not found or too short.");
+    debug("RIFF::AIFF::AudioProperties::read() - 'COMM' chunk not found or too short.");
     return;
   }
 
   if(streamLength == 0) {
-    debug("RIFF::AIFF::Properties::read() - 'SSND' chunk not found.");
+    debug("RIFF::AIFF::AudioProperties::read() - 'SSND' chunk not found.");
     return;
   }
 
-  d->channels      = data.toShort(0U);
-  d->sampleFrames  = data.toUInt(2U);
-  d->bitsPerSample = data.toShort(6U);
+  d->channels      = data.toUInt16BE(0);
+  d->sampleFrames  = data.toUInt32BE(2);
+  d->bitsPerSample = data.toUInt16BE(6);
 
   const long double sampleRate = data.toFloat80BE(8);
   if(sampleRate >= 1.0)

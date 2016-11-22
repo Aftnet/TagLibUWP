@@ -31,12 +31,11 @@
 
 #include "tdebug.h"
 #include "tstring.h"
+#include "tutils.h"
 #include "tdebuglistener.h"
 #include "tutils.h"
 
 #include <bitset>
-#include <cstdio>
-#include <cstdarg>
 
 namespace TagLib
 {

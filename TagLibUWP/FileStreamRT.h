@@ -28,7 +28,7 @@ namespace TagLib
 		/*!
 		* Reads a block of size \a length at the current get pointer.
 		*/
-		virtual ByteVector readBlock(unsigned long length);
+		virtual ByteVector readBlock(size_t length);
 
 		/*!
 		* Attempts to write the block \a data at the current get pointer.  If the
@@ -48,7 +48,7 @@ namespace TagLib
 		* \note This method is slow since it requires rewriting all of the file
 		* after the insertion point.
 		*/
-		virtual void insert(const ByteVector &data, unsigned long start = 0, unsigned long replace = 0);
+		virtual void insert(const ByteVector &data, long long start = 0, size_t replace = 0);
 
 		/*!
 		* Removes a block of the file starting a \a start and continuing for
@@ -57,7 +57,7 @@ namespace TagLib
 		* \note This method is slow since it involves rewriting all of the file
 		* after the removed portion.
 		*/
-		virtual void removeBlock(unsigned long start = 0, unsigned long length = 0);
+		virtual void removeBlock(long long start = 0, size_t length = 0);
 
 		/*!
 		* Returns true if the file is read only (or if the file can not be opened).
@@ -76,7 +76,7 @@ namespace TagLib
 		*
 		* \see Position
 		*/
-		virtual void seek(long offset, Position p = Beginning);
+		virtual void seek(long long offset, Position p = Beginning);
 
 		/*!
 		* Reset the end-of-stream and error flags on the stream.
@@ -86,20 +86,20 @@ namespace TagLib
 		/*!
 		* Returns the current offset within the stream.
 		*/
-		virtual long tell() const;
+		virtual long long tell() const;
 
 		/*!
 		* Returns the length of the stream.
 		*/
-		virtual long length();
+		virtual long long length();
 
 		/*!
 		* Truncates the stream to a \a length.
 		*/
-		virtual void truncate(long length);
+		virtual void truncate(long long length);
 
 	private:
-		static const unsigned int DefaultBufferSize = 16 * 1024;
+		static const size_t DefaultBufferSize = 16 * 1024;
 
 		Platform::String^ const Name;
 		IRandomAccessStream^ const Stream;

@@ -37,14 +37,14 @@ using namespace TagLib;
 class Ogg::Page::PagePrivate
 {
 public:
-  PagePrivate(File *f = 0, long pageOffset = -1) :
+  PagePrivate(File *f = 0, long long pageOffset = -1) :
     file(f),
     fileOffset(pageOffset),
     header(f, pageOffset),
     firstPacketIndex(-1) {}
 
   File *file;
-  long fileOffset;
+  long long fileOffset;
   PageHeader header;
   int firstPacketIndex;
   ByteVectorList packets;
@@ -54,7 +54,7 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-Ogg::Page::Page(Ogg::File *file, long pageOffset) :
+Ogg::Page::Page(Ogg::File *file, long long pageOffset) :
   d(new PagePrivate(file, pageOffset))
 {
 }
@@ -64,7 +64,7 @@ Ogg::Page::~Page()
   delete d;
 }
 
-long Ogg::Page::fileOffset() const
+long long Ogg::Page::fileOffset() const
 {
   return d->fileOffset;
 }
@@ -134,7 +134,7 @@ Ogg::Page::ContainsPacketFlags Ogg::Page::containsPacket(int index) const
 
 unsigned int Ogg::Page::packetCount() const
 {
-  return d->header.packetSizes().size();
+  return static_cast<unsigned int>(d->header.packetSizes().size());
 }
 
 ByteVectorList Ogg::Page::packets() const
@@ -189,7 +189,7 @@ ByteVector Ogg::Page::render() const
   // the entire page with the 4 bytes reserved for the checksum zeroed and then
   // inserted in bytes 22-25 of the page header.
 
-  const ByteVector checksum = ByteVector::fromUInt(data.checksum(), false);
+  const ByteVector checksum = ByteVector::fromUInt32LE(data.checksum());
   std::copy(checksum.begin(), checksum.end(), data.begin() + 22);
 
   return data;
@@ -300,7 +300,7 @@ Ogg::Page::Page(const ByteVectorList &packets,
   List<int> packetSizes;
 
   for(ByteVectorList::ConstIterator it = packets.begin(); it != packets.end(); ++it) {
-    packetSizes.append((*it).size());
+    packetSizes.append(static_cast<int>((*it).size()));
     data.append(*it);
   }
   d->packets = packets;

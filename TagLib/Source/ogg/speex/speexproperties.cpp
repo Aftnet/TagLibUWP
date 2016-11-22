@@ -29,7 +29,6 @@
 
 #include <tstring.h>
 #include <tdebug.h>
-
 #include <oggpageheader.h>
 
 #include "speexproperties.h"
@@ -38,7 +37,7 @@
 using namespace TagLib;
 using namespace TagLib::Ogg;
 
-class Speex::Properties::PropertiesPrivate
+class Speex::AudioProperties::PropertiesPrivate
 {
 public:
   PropertiesPrivate() :
@@ -65,54 +64,54 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-Speex::Properties::Properties(File *file, ReadStyle style) :
-  AudioProperties(style),
+Speex::AudioProperties::AudioProperties(File *file, ReadStyle) :
+  TagLib::AudioProperties(),
   d(new PropertiesPrivate())
 {
   read(file);
 }
 
-Speex::Properties::~Properties()
+Speex::AudioProperties::~AudioProperties()
 {
   delete d;
 }
 
-int Speex::Properties::length() const
+int Speex::AudioProperties::length() const
 {
   return lengthInSeconds();
 }
 
-int Speex::Properties::lengthInSeconds() const
+int Speex::AudioProperties::lengthInSeconds() const
 {
   return d->length / 1000;
 }
 
-int Speex::Properties::lengthInMilliseconds() const
+int Speex::AudioProperties::lengthInMilliseconds() const
 {
   return d->length;
 }
 
-int Speex::Properties::bitrate() const
+int Speex::AudioProperties::bitrate() const
 {
   return d->bitrate;
 }
 
-int Speex::Properties::bitrateNominal() const
+int Speex::AudioProperties::bitrateNominal() const
 {
   return d->bitrateNominal;
 }
 
-int Speex::Properties::sampleRate() const
+int Speex::AudioProperties::sampleRate() const
 {
   return d->sampleRate;
 }
 
-int Speex::Properties::channels() const
+int Speex::AudioProperties::channels() const
 {
   return d->channels;
 }
 
-int Speex::Properties::speexVersion() const
+int Speex::AudioProperties::speexVersion() const
 {
   return d->speexVersion;
 }
@@ -121,42 +120,42 @@ int Speex::Properties::speexVersion() const
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void Speex::Properties::read(File *file)
+void Speex::AudioProperties::read(File *file)
 {
   // Get the identification header from the Ogg implementation.
 
   const ByteVector data = file->packet(0);
   if(data.size() < 64) {
-    debug("Speex::Properties::read() -- data is too short.");
+    debug("Speex::AudioProperties::read() -- data is too short.");
     return;
   }
 
-  unsigned int pos = 28;
+  size_t pos = 28;
 
   // speex_version_id;       /**< Version for Speex (for checking compatibility) */
-  d->speexVersion = data.toUInt(pos, false);
+  d->speexVersion = data.toUInt32LE(pos);
   pos += 4;
 
   // header_size;            /**< Total size of the header ( sizeof(SpeexHeader) ) */
   pos += 4;
 
   // rate;                   /**< Sampling rate used */
-  d->sampleRate = data.toUInt(pos, false);
+  d->sampleRate = data.toUInt32LE(pos);
   pos += 4;
 
   // mode;                   /**< Mode used (0 for narrowband, 1 for wideband) */
-  d->mode = data.toUInt(pos, false);
+  d->mode = data.toUInt32LE(pos);
   pos += 4;
 
   // mode_bitstream_version; /**< Version ID of the bit-stream */
   pos += 4;
 
   // nb_channels;            /**< Number of channels encoded */
-  d->channels = data.toUInt(pos, false);
+  d->channels = data.toUInt32LE(pos);
   pos += 4;
 
   // bitrate;                /**< Bit-rate used */
-  d->bitrateNominal = data.toUInt(pos, false);
+  d->bitrateNominal = data.toUInt32LE(pos);
   pos += 4;
 
   // frame_size;             /**< Size of frames */
@@ -164,7 +163,7 @@ void Speex::Properties::read(File *file)
   pos += 4;
 
   // vbr;                    /**< 1 for a VBR encoding, 0 otherwise */
-  d->vbr = data.toUInt(pos, false) == 1;
+  d->vbr = data.toUInt32LE(pos) == 1;
   pos += 4;
 
   // frames_per_packet;      /**< Number of frames stored per Ogg packet */
@@ -187,12 +186,12 @@ void Speex::Properties::read(File *file)
       }
     }
     else {
-      debug("Speex::Properties::read() -- Either the PCM values for the start or "
+      debug("Speex::AudioProperties::read() -- Either the PCM values for the start or "
             "end of this file was incorrect or the sample rate is zero.");
     }
   }
   else
-    debug("Speex::Properties::read() -- Could not find valid first and last Ogg pages.");
+    debug("Speex::AudioProperties::read() -- Could not find valid first and last Ogg pages.");
 
   // Alternative to the actual average bitrate.
 

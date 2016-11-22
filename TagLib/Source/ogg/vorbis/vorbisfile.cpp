@@ -34,7 +34,7 @@
 
 using namespace TagLib;
 
-class Vorbis::File::FilePrivate
+class Ogg::Vorbis::File::FilePrivate
 {
 public:
   FilePrivate() :
@@ -48,7 +48,7 @@ public:
   }
 
   Ogg::XiphComment *comment;
-  Properties *properties;
+  AudioProperties *properties;
 };
 
 namespace TagLib {
@@ -63,7 +63,7 @@ namespace TagLib {
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-Vorbis::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
+Ogg::Vorbis::File::File(FileName file, bool readProperties, AudioProperties::ReadStyle) :
   Ogg::File(file),
   d(new FilePrivate())
 {
@@ -71,7 +71,7 @@ Vorbis::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
     read(readProperties);
 }
 
-Vorbis::File::File(IOStream *stream, bool readProperties, Properties::ReadStyle) :
+Ogg::Vorbis::File::File(IOStream *stream, bool readProperties, AudioProperties::ReadStyle) :
   Ogg::File(stream),
   d(new FilePrivate())
 {
@@ -79,32 +79,22 @@ Vorbis::File::File(IOStream *stream, bool readProperties, Properties::ReadStyle)
     read(readProperties);
 }
 
-Vorbis::File::~File()
+Ogg::Vorbis::File::~File()
 {
   delete d;
 }
 
-Ogg::XiphComment *Vorbis::File::tag() const
+Ogg::XiphComment *Ogg::Vorbis::File::tag() const
 {
   return d->comment;
 }
 
-PropertyMap Vorbis::File::properties() const
-{
-  return d->comment->properties();
-}
-
-PropertyMap Vorbis::File::setProperties(const PropertyMap &properties)
-{
-  return d->comment->setProperties(properties);
-}
-
-Vorbis::Properties *Vorbis::File::audioProperties() const
+Ogg::Vorbis::AudioProperties *Ogg::Vorbis::File::audioProperties() const
 {
   return d->properties;
 }
 
-bool Vorbis::File::save()
+bool Ogg::Vorbis::File::save()
 {
   ByteVector v(vorbisCommentHeaderID);
 
@@ -121,12 +111,12 @@ bool Vorbis::File::save()
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void Vorbis::File::read(bool readProperties)
+void Ogg::Vorbis::File::read(bool readProperties)
 {
   ByteVector commentHeaderData = packet(1);
 
   if(commentHeaderData.mid(0, 7) != vorbisCommentHeaderID) {
-    debug("Vorbis::File::read() - Could not find the Vorbis comment header.");
+    debug("Ogg::Vorbis::File::read() - Could not find the Ogg::Vorbis comment header.");
     setValid(false);
     return;
   }
@@ -134,5 +124,5 @@ void Vorbis::File::read(bool readProperties)
   d->comment = new Ogg::XiphComment(commentHeaderData.mid(7));
 
   if(readProperties)
-    d->properties = new Properties(this);
+    d->properties = new AudioProperties(this);
 }

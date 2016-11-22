@@ -36,11 +36,11 @@ namespace TagLib {
 
   namespace Utils {
 
-    long findID3v1(File *file);
+    long long findID3v1(File *file);
 
-    long findID3v2(File *file);
+    long long findID3v2(File *file);
 
-    long findAPE(File *file, long id3v1Location);
+    long long findAPE(File *file, long long id3v1Location);
   }
 }
 

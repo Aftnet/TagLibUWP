@@ -144,7 +144,7 @@ void SynchronizedLyricsFrame::setSynchedText(
 
 void SynchronizedLyricsFrame::parseFields(const ByteVector &data)
 {
-  const int end = data.size();
+  const size_t end = data.size();
   if(end < 7) {
     debug("A synchronized lyrics frame must contain at least 7 bytes.");
     return;
@@ -155,9 +155,9 @@ void SynchronizedLyricsFrame::parseFields(const ByteVector &data)
   d->timestampFormat = TimestampFormat(data[4]);
   d->type = Type(data[5]);
 
-  int pos = 6;
+  size_t pos = 6;
 
-  d->description = readStringField(data, d->textEncoding, &pos);
+  d->description = readStringField(data, d->textEncoding, pos);
   if(pos == 6)
     return;
 
@@ -170,7 +170,7 @@ void SynchronizedLyricsFrame::parseFields(const ByteVector &data)
    */
   String::Type encWithEndianness = d->textEncoding;
   if(d->textEncoding == String::UTF16) {
-    unsigned short bom = data.toUShort(6, true);
+    unsigned short bom = data.toUInt16BE(6);
     if(bom == 0xfffe) {
       encWithEndianness = String::UTF16LE;
     } else if(bom == 0xfeff) {
@@ -183,16 +183,16 @@ void SynchronizedLyricsFrame::parseFields(const ByteVector &data)
     String::Type enc = d->textEncoding;
     // If a UTF16 string has no BOM, use the encoding found above.
     if(enc == String::UTF16 && pos + 1 < end) {
-      unsigned short bom = data.toUShort(pos, true);
+      unsigned short bom = data.toUInt16BE(pos);
       if(bom != 0xfffe && bom != 0xfeff) {
         enc = encWithEndianness;
       }
     }
-    String text = readStringField(data, enc, &pos);
+    String text = readStringField(data, enc, pos);
     if(text.isEmpty() || pos + 4 > end)
       return;
 
-    unsigned int time = data.toUInt(pos, true);
+    unsigned int time = data.toUInt32BE(pos);
     pos += 4;
 
     d->synchedText.append(SynchedText(time, text));
@@ -224,7 +224,7 @@ ByteVector SynchronizedLyricsFrame::renderFields() const
     const SynchedText &entry = *it;
     v.append(entry.text.data(encoding));
     v.append(textDelimiter(encoding));
-    v.append(ByteVector::fromUInt(entry.time));
+    v.append(ByteVector::fromUInt32BE(entry.time));
   }
 
   return v;
