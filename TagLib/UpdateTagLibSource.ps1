@@ -7,7 +7,6 @@ Expand-Archive -Path $downloadedFileName -DestinationPath $extractDir -Force
 
 $srcDir = "Temp\\taglib-taglib2\\taglib"
 $destDir = "Source"
-Copy-Item ($destDir + "\\taglib_config.h") -Destination $srcDir -Force
 Remove-Item $destDir -Recurse -Force
 New-Item -ItemType directory -Path $destDir
 Copy-Item ($srcDir+"\\*") -Destination $destDir -Recurse -Force
