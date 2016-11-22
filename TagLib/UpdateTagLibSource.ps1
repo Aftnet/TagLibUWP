@@ -1,5 +1,5 @@
 $downloadedFileName = "taglib-src.zip"
-wget "https://github.com/taglib/taglib/archive/master.zip" -outfile $downloadedFileName
+wget "https://github.com/taglib/taglib/archive/taglib2.zip" -outfile $downloadedFileName
 
 $extractDir = "Temp"
 New-Item -ItemType directory $extractDir -Force
