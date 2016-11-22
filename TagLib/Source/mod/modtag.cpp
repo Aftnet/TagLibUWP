@@ -27,6 +27,7 @@
 #include "modtag.h"
 #include "tstringlist.h"
 #include "tpropertymap.h"
+#include "tpicturemap.h"
 
 using namespace TagLib;
 using namespace Mod;
@@ -88,6 +89,11 @@ unsigned int Mod::Tag::track() const
   return 0;
 }
 
+TagLib::PictureMap Mod::Tag::pictures() const
+{
+    return PictureMap();
+}
+
 String Mod::Tag::trackerName() const
 {
   return d->trackerName;
@@ -120,6 +126,10 @@ void Mod::Tag::setYear(unsigned int)
 }
 
 void Mod::Tag::setTrack(unsigned int)
+{
+}
+
+void Mod::Tag::setPictures(const PictureMap &l)
 {
 }
 

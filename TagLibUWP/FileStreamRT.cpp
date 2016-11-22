@@ -13,7 +13,7 @@ void readFromFile(IRandomAccessStream^ stream, DataReader^ reader, TagLib::ByteV
 	auto remaining = size - position;
 	if (remaining < buffer.size())
 	{
-		buffer.resize(static_cast<int>(remaining));
+		buffer.resize(remaining);
 		if (remaining == 0)
 		{
 			return;
@@ -57,12 +57,12 @@ namespace TagLib
 		return FileName(Name->Data());
 	}
 
-	ByteVector FileStreamRT::readBlock(unsigned long length)
+	ByteVector FileStreamRT::readBlock(size_t length)
 	{
 		if (!this->isOpen())
 			return ByteVector();
 
-		ByteVector buffer(static_cast<unsigned int>(length));
+		ByteVector buffer(length);
 		auto reader = ref new DataReader(Stream);
 		readFromFile(Stream, reader, buffer);
 		reader->DetachStream();
@@ -79,7 +79,7 @@ namespace TagLib
 		writer->DetachStream();
 	}
 
-	void FileStreamRT::insert(const ByteVector & data, unsigned long start, unsigned long replace)
+	void FileStreamRT::insert(const ByteVector & data, long long start, size_t replace)
 	{
 		if (!this->isOpen() || this->readOnly())
 			return;
@@ -110,14 +110,14 @@ namespace TagLib
 
 		// Set where to start the reading and writing.
 
-		long readPosition = start + replace;
-		long writePosition = start;
+		auto readPosition = start + replace;
+		auto writePosition = start;
 
 		auto reader = ref new DataReader(Stream);
 		auto writer = ref new DataWriter(Stream);
 
 		ByteVector buffer = data;
-		ByteVector aboutToOverwrite(static_cast<unsigned int>(bufferLength));
+		ByteVector aboutToOverwrite(bufferLength);
 
 		auto initialSize = length();
 		do
@@ -145,12 +145,12 @@ namespace TagLib
 		writer->DetachStream();
 	}
 
-	void FileStreamRT::removeBlock(unsigned long start, unsigned long length)
+	void FileStreamRT::removeBlock(long long start, size_t length)
 	{
 		if (!this->isOpen() || this->readOnly())
 			return;
 
-		ByteVector buffer(static_cast<unsigned int>(DefaultBufferSize));
+		ByteVector buffer(DefaultBufferSize);
 
 		auto readPosition = start + length;
 		auto writePosition = start;
@@ -185,7 +185,7 @@ namespace TagLib
 		return Stream != nullptr;
 	}
 
-	void FileStreamRT::seek(long offset, Position p)
+	void FileStreamRT::seek(long long offset, Position p)
 	{
 		if (p == Position::Current)
 			offset += tell();
@@ -200,17 +200,17 @@ namespace TagLib
 		//Meaningless in Windows
 	}
 
-	long FileStreamRT::tell() const
+	long long FileStreamRT::tell() const
 	{
-		return static_cast<long>(Stream->Position);
+		return Stream->Position;
 	}
 
-	long FileStreamRT::length()
+	long long FileStreamRT::length()
 	{
-		return static_cast<long>(Stream->Size);
+		return Stream->Size;
 	}
 
-	void FileStreamRT::truncate(long length)
+	void FileStreamRT::truncate(long long length)
 	{
 		length = min(length, this->length());
 		Stream->Size = length;

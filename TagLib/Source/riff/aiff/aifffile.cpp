@@ -47,7 +47,7 @@ public:
     delete tag;
   }
 
-  Properties *properties;
+  AudioProperties *properties;
   ID3v2::Tag *tag;
 
   bool hasID3v2;
@@ -57,7 +57,7 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-RIFF::AIFF::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
+RIFF::AIFF::File::File(FileName file, bool readProperties, AudioProperties::ReadStyle) :
   RIFF::File(file, BigEndian),
   d(new FilePrivate())
 {
@@ -65,7 +65,7 @@ RIFF::AIFF::File::File(FileName file, bool readProperties, Properties::ReadStyle
     read(readProperties);
 }
 
-RIFF::AIFF::File::File(IOStream *stream, bool readProperties, Properties::ReadStyle) :
+RIFF::AIFF::File::File(IOStream *stream, bool readProperties, AudioProperties::ReadStyle) :
   RIFF::File(stream, BigEndian),
   d(new FilePrivate())
 {
@@ -83,22 +83,7 @@ ID3v2::Tag *RIFF::AIFF::File::tag() const
   return d->tag;
 }
 
-PropertyMap RIFF::AIFF::File::properties() const
-{
-  return d->tag->properties();
-}
-
-void RIFF::AIFF::File::removeUnsupportedProperties(const StringList &unsupported)
-{
-  d->tag->removeUnsupportedProperties(unsupported);
-}
-
-PropertyMap RIFF::AIFF::File::setProperties(const PropertyMap &properties)
-{
-  return d->tag->setProperties(properties);
-}
-
-RIFF::AIFF::Properties *RIFF::AIFF::File::audioProperties() const
+RIFF::AIFF::AudioProperties *RIFF::AIFF::File::audioProperties() const
 {
   return d->properties;
 }
@@ -157,5 +142,5 @@ void RIFF::AIFF::File::read(bool readProperties)
     d->tag = new ID3v2::Tag();
 
   if(readProperties)
-    d->properties = new Properties(this, Properties::Average);
+    d->properties = new AudioProperties(this);
 }

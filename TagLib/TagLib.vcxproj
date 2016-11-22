@@ -120,8 +120,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,8 +134,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,8 +148,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,8 +162,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1;%(ClCompile.PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,8 +176,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -190,8 +190,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>TAGLIB_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TAGLIB_STATIC;HAVE_STD_SMART_PTR;HAVE_MSC_BYTESWAP;HAVE_STD_ATOMIC;HAVE_VSPRINTF_S;HAVE_ISO_STRDUP;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)Source;$(ProjectDir)Source\ape;$(ProjectDir)Source\asf;$(ProjectDir)Source\dsf;$(ProjectDir)Source\ebml;$(ProjectDir)Source\flac;$(ProjectDir)Source\it;$(ProjectDir)Source\mod;$(ProjectDir)Source\mp4;$(ProjectDir)Source\mpc;$(ProjectDir)Source\mpeg;$(ProjectDir)Source\ogg;$(ProjectDir)Source\riff;$(ProjectDir)Source\s3m;$(ProjectDir)Source\toolkit;$(ProjectDir)Source\trueaudio;$(ProjectDir)Source\wavpack;$(ProjectDir)Source\xm;$(ProjectDir)Source\ebml\matroska;$(ProjectDir)Source\mpeg\id3v1;$(ProjectDir)Source\mpeg\id3v2;$(ProjectDir)Source\mpeg\id3v2\frames;$(ProjectDir)Source\ogg\flac;$(ProjectDir)Source\ogg\opus;$(ProjectDir)Source\ogg\speex;$(ProjectDir)Source\ogg\vorbis;$(ProjectDir)Source\riff\aiff;$(ProjectDir)Source\riff\wav;$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -212,6 +212,14 @@
     <ClInclude Include="Source\asf\asftag.h" />
     <ClInclude Include="Source\asf\asfutils.h" />
     <ClInclude Include="Source\audioproperties.h" />
+    <ClInclude Include="Source\dsf\dsffile.h" />
+    <ClInclude Include="Source\dsf\dsfproperties.h" />
+    <ClInclude Include="Source\ebml\ebmlconstants.h" />
+    <ClInclude Include="Source\ebml\ebmlelement.h" />
+    <ClInclude Include="Source\ebml\ebmlfile.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskaaudio.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskaconstants.h" />
+    <ClInclude Include="Source\ebml\matroska\ebmlmatroskafile.h" />
     <ClInclude Include="Source\fileref.h" />
     <ClInclude Include="Source\flac\flacfile.h" />
     <ClInclude Include="Source\flac\flacmetadatablock.h" />
@@ -285,7 +293,6 @@
     <ClInclude Include="Source\s3m\s3mfile.h" />
     <ClInclude Include="Source\s3m\s3mproperties.h" />
     <ClInclude Include="Source\tag.h" />
-    <ClInclude Include="Source\taglib_config.h" />
     <ClInclude Include="Source\taglib_export.h" />
     <ClInclude Include="Source\tagunion.h" />
     <ClInclude Include="Source\tagutils.h" />
@@ -300,9 +307,13 @@
     <ClInclude Include="Source\toolkit\tiostream.h" />
     <ClInclude Include="Source\toolkit\tlist.h" />
     <ClInclude Include="Source\toolkit\tmap.h" />
+    <ClInclude Include="Source\toolkit\tpicture.h" />
+    <ClInclude Include="Source\toolkit\tpicturemap.h" />
     <ClInclude Include="Source\toolkit\tpropertymap.h" />
     <ClInclude Include="Source\toolkit\trefcounter.h" />
+    <ClInclude Include="Source\toolkit\tsmartptr.h" />
     <ClInclude Include="Source\toolkit\tstring.h" />
+    <ClInclude Include="Source\toolkit\tstringhandler.h" />
     <ClInclude Include="Source\toolkit\tstringlist.h" />
     <ClInclude Include="Source\toolkit\tutils.h" />
     <ClInclude Include="Source\toolkit\tzlib.h" />
@@ -327,6 +338,12 @@
     <ClCompile Include="Source\asf\asfproperties.cpp" />
     <ClCompile Include="Source\asf\asftag.cpp" />
     <ClCompile Include="Source\audioproperties.cpp" />
+    <ClCompile Include="Source\dsf\dsffile.cpp" />
+    <ClCompile Include="Source\dsf\dsfproperties.cpp" />
+    <ClCompile Include="Source\ebml\ebmlelement.cpp" />
+    <ClCompile Include="Source\ebml\ebmlfile.cpp" />
+    <ClCompile Include="Source\ebml\matroska\ebmlmatroskaaudio.cpp" />
+    <ClCompile Include="Source\ebml\matroska\ebmlmatroskafile.cpp" />
     <ClCompile Include="Source\fileref.cpp" />
     <ClCompile Include="Source\flac\flacfile.cpp" />
     <ClCompile Include="Source\flac\flacmetadatablock.cpp" />
@@ -399,6 +416,7 @@
     <ClCompile Include="Source\tag.cpp" />
     <ClCompile Include="Source\tagunion.cpp" />
     <ClCompile Include="Source\tagutils.cpp" />
+    <ClCompile Include="Source\toolkit\taglib.cpp" />
     <ClCompile Include="Source\toolkit\tbytevector.cpp" />
     <ClCompile Include="Source\toolkit\tbytevectorlist.cpp" />
     <ClCompile Include="Source\toolkit\tbytevectorstream.cpp" />
@@ -407,9 +425,12 @@
     <ClCompile Include="Source\toolkit\tfile.cpp" />
     <ClCompile Include="Source\toolkit\tfilestream.cpp" />
     <ClCompile Include="Source\toolkit\tiostream.cpp" />
+    <ClCompile Include="Source\toolkit\tpicture.cpp" />
+    <ClCompile Include="Source\toolkit\tpicturemap.cpp" />
     <ClCompile Include="Source\toolkit\tpropertymap.cpp" />
     <ClCompile Include="Source\toolkit\trefcounter.cpp" />
     <ClCompile Include="Source\toolkit\tstring.cpp" />
+    <ClCompile Include="Source\toolkit\tstringhandler.cpp" />
     <ClCompile Include="Source\toolkit\tstringlist.cpp" />
     <ClCompile Include="Source\toolkit\tzlib.cpp" />
     <ClCompile Include="Source\toolkit\unicode.cpp" />

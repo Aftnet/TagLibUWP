@@ -123,7 +123,7 @@ bool TableOfContentsFrame::isOrdered() const
 
 unsigned int TableOfContentsFrame::entryCount() const
 {
-  return d->childElements.size();
+  return static_cast<unsigned int>(d->childElements.size());
 }
 
 ByteVectorList TableOfContentsFrame::childElements() const
@@ -261,7 +261,7 @@ TableOfContentsFrame *TableOfContentsFrame::findTopLevel(const ID3v2::Tag *tag) 
 
 void TableOfContentsFrame::parseFields(const ByteVector &data)
 {
-  unsigned int size = data.size();
+  size_t size = data.size();
   if(size < 6) {
     debug("A CTOC frame must contain at least 6 bytes (1 byte element ID terminated by "
           "null, 1 byte flags, 1 byte entry count and 1 byte child element ID terminated "
@@ -269,14 +269,14 @@ void TableOfContentsFrame::parseFields(const ByteVector &data)
     return;
   }
 
-  int pos = 0;
-  unsigned int embPos = 0;
-  d->elementID = readStringField(data, String::Latin1, &pos).data(String::Latin1);
+  size_t pos = 0;
+  size_t embPos = 0;
+  d->elementID = readStringField(data, String::Latin1, pos).data(String::Latin1);
   d->isTopLevel = (data.at(pos) & 2) != 0;
   d->isOrdered = (data.at(pos++) & 1) != 0;
   unsigned int entryCount = static_cast<unsigned char>(data.at(pos++));
   for(unsigned int i = 0; i < entryCount; i++) {
-    ByteVector childElementID = readStringField(data, String::Latin1, &pos).data(String::Latin1);
+    ByteVector childElementID = readStringField(data, String::Latin1, pos).data(String::Latin1);
     d->childElements.append(childElementID);
   }
 
@@ -286,7 +286,7 @@ void TableOfContentsFrame::parseFields(const ByteVector &data)
     return;
 
   while(embPos < size - header()->size()) {
-    Frame *frame = FrameFactory::instance()->createFrame(data.mid(pos + embPos), (d->tagHeader != 0));
+    Frame *frame = FrameFactory::instance()->createFrame(data.mid(pos + embPos), d->tagHeader);
 
     if(!frame)
       return;

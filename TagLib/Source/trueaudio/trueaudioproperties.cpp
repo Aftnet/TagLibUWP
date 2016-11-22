@@ -29,14 +29,13 @@
 
 #include <tstring.h>
 #include <tdebug.h>
-#include <bitset>
 
 #include "trueaudioproperties.h"
 #include "trueaudiofile.h"
 
 using namespace TagLib;
 
-class TrueAudio::Properties::PropertiesPrivate
+class TrueAudio::AudioProperties::PropertiesPrivate
 {
 public:
   PropertiesPrivate() :
@@ -61,59 +60,59 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-TrueAudio::Properties::Properties(const ByteVector &data, long streamLength, ReadStyle style) :
-  AudioProperties(style),
+TrueAudio::AudioProperties::AudioProperties(const ByteVector &data, long long streamLength, ReadStyle) :
+  TagLib::AudioProperties(),
   d(new PropertiesPrivate())
 {
   read(data, streamLength);
 }
 
-TrueAudio::Properties::~Properties()
+TrueAudio::AudioProperties::~AudioProperties()
 {
   delete d;
 }
 
-int TrueAudio::Properties::length() const
+int TrueAudio::AudioProperties::length() const
 {
   return lengthInSeconds();
 }
 
-int TrueAudio::Properties::lengthInSeconds() const
+int TrueAudio::AudioProperties::lengthInSeconds() const
 {
   return d->length / 1000;
 }
 
-int TrueAudio::Properties::lengthInMilliseconds() const
+int TrueAudio::AudioProperties::lengthInMilliseconds() const
 {
   return d->length;
 }
 
-int TrueAudio::Properties::bitrate() const
+int TrueAudio::AudioProperties::bitrate() const
 {
   return d->bitrate;
 }
 
-int TrueAudio::Properties::sampleRate() const
+int TrueAudio::AudioProperties::sampleRate() const
 {
   return d->sampleRate;
 }
 
-int TrueAudio::Properties::bitsPerSample() const
+int TrueAudio::AudioProperties::bitsPerSample() const
 {
   return d->bitsPerSample;
 }
 
-int TrueAudio::Properties::channels() const
+int TrueAudio::AudioProperties::channels() const
 {
   return d->channels;
 }
 
-unsigned int TrueAudio::Properties::sampleFrames() const
+unsigned int TrueAudio::AudioProperties::sampleFrames() const
 {
   return d->sampleFrames;
 }
 
-int TrueAudio::Properties::ttaVersion() const
+int TrueAudio::AudioProperties::ttaVersion() const
 {
   return d->version;
 }
@@ -122,19 +121,19 @@ int TrueAudio::Properties::ttaVersion() const
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void TrueAudio::Properties::read(const ByteVector &data, long streamLength)
+void TrueAudio::AudioProperties::read(const ByteVector &data, long long streamLength)
 {
   if(data.size() < 4) {
-    debug("TrueAudio::Properties::read() -- data is too short.");
+    debug("TrueAudio::AudioProperties::read() -- data is too short.");
     return;
   }
 
   if(!data.startsWith("TTA")) {
-    debug("TrueAudio::Properties::read() -- invalid header signature.");
+    debug("TrueAudio::AudioProperties::read() -- invalid header signature.");
     return;
   }
 
-  unsigned int pos = 3;
+  size_t pos = 3;
 
   d->version = data[pos] - '0';
   pos += 1;
@@ -143,23 +142,23 @@ void TrueAudio::Properties::read(const ByteVector &data, long streamLength)
   // TTA2 headers are in development, and have a different format
   if(1 == d->version) {
     if(data.size() < 18) {
-      debug("TrueAudio::Properties::read() -- data is too short.");
+      debug("TrueAudio::AudioProperties::read() -- data is too short.");
       return;
     }
 
     // Skip the audio format
     pos += 2;
 
-    d->channels = data.toShort(pos, false);
+    d->channels = data.toUInt16LE(pos);
     pos += 2;
 
-    d->bitsPerSample = data.toShort(pos, false);
+    d->bitsPerSample = data.toUInt16LE(pos);
     pos += 2;
 
-    d->sampleRate = data.toUInt(pos, false);
+    d->sampleRate = data.toUInt32LE(pos);
     pos += 4;
 
-    d->sampleFrames = data.toUInt(pos, false);
+    d->sampleFrames = data.toUInt32LE(pos);
     pos += 4;
 
     if(d->sampleFrames > 0 && d->sampleRate > 0) {

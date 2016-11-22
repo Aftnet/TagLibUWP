@@ -25,6 +25,7 @@
 
 #include <tdebug.h>
 #include <tfile.h>
+#include <tpicturemap.h>
 
 #include "id3v1tag.h"
 #include "id3v1genres.h"
@@ -34,8 +35,28 @@ using namespace ID3v1;
 
 namespace
 {
-  const ID3v1::StringHandler defaultStringHandler;
-  const ID3v1::StringHandler *stringHandler = &defaultStringHandler;
+  class DefaultStringHandler : public TagLib::StringHandler
+  {
+  public:
+    DefaultStringHandler() :
+      TagLib::StringHandler() {}
+
+    virtual String parse(const ByteVector &data) const
+    {
+      return String(data, String::Latin1).stripWhiteSpace();
+    }
+
+    virtual ByteVector render(const String &s) const
+    {
+      if(s.isLatin1())
+        return s.data(String::Latin1);
+      else
+        return ByteVector();
+    }
+  };
+
+  const DefaultStringHandler defaultStringHandler;
+  const TagLib::StringHandler *stringHandler = &defaultStringHandler;
 }
 
 class ID3v1::Tag::TagPrivate
@@ -48,7 +69,7 @@ public:
     genre(255) {}
 
   File *file;
-  long tagOffset;
+  long long tagOffset;
 
   String title;
   String artist;
@@ -60,27 +81,6 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// StringHandler implementation
-////////////////////////////////////////////////////////////////////////////////
-
-StringHandler::StringHandler()
-{
-}
-
-String ID3v1::StringHandler::parse(const ByteVector &data) const
-{
-  return String(data, String::Latin1).stripWhiteSpace();
-}
-
-ByteVector ID3v1::StringHandler::render(const String &s) const
-{
-  if(s.isLatin1())
-    return s.data(String::Latin1);
-  else
-    return ByteVector();
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // public methods
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ ID3v1::Tag::Tag() :
 {
 }
 
-ID3v1::Tag::Tag(File *file, long tagOffset) :
+ID3v1::Tag::Tag(File *file, long long tagOffset) :
   TagLib::Tag(),
   d(new TagPrivate())
 {
@@ -162,6 +162,11 @@ unsigned int ID3v1::Tag::track() const
   return d->track;
 }
 
+TagLib::PictureMap ID3v1::Tag::pictures() const
+{
+    return PictureMap();
+}
+
 void ID3v1::Tag::setTitle(const String &s)
 {
   d->title = s;
@@ -197,6 +202,10 @@ void ID3v1::Tag::setTrack(unsigned int i)
   d->track = i < 256 ? i : 0;
 }
 
+void ID3v1::Tag::setPictures(const PictureMap &l)
+{
+}
+
 unsigned int ID3v1::Tag::genreNumber() const
 {
   return d->genre;
@@ -207,7 +216,7 @@ void ID3v1::Tag::setGenreNumber(unsigned int i)
   d->genre = i < 256 ? i : 255;
 }
 
-void ID3v1::Tag::setStringHandler(const StringHandler *handler)
+void ID3v1::Tag::setStringHandler(const TagLib::StringHandler *handler)
 {
   if(handler)
     stringHandler = handler;

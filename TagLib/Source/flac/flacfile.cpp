@@ -51,8 +51,8 @@ namespace
 
   enum { FlacXiphIndex = 0, FlacID3v2Index = 1, FlacID3v1Index = 2 };
 
-  const long MinPaddingLength = 4096;
-  const long MaxPaddingLegnth = 1024 * 1024;
+  const long long MinPaddingLength = 4096;
+  const long long MaxPaddingLegnth = 1024 * 1024;
 
   const char LastBlockFlag = '\x80';
 }
@@ -60,8 +60,8 @@ namespace
 class FLAC::File::FilePrivate
 {
 public:
-  FilePrivate(const ID3v2::FrameFactory *frameFactory = ID3v2::FrameFactory::instance()) :
-    ID3v2FrameFactory(frameFactory),
+  FilePrivate(const ID3v2::FrameFactory *frameFactory) :
+    ID3v2FrameFactory(ID3v2::FrameFactory::instance()),
     ID3v2Location(-1),
     ID3v2OriginalSize(0),
     ID3v1Location(-1),
@@ -70,6 +70,9 @@ public:
     streamStart(0),
     scanned(false)
   {
+    if(frameFactory)
+      ID3v2FrameFactory = frameFactory;
+
     blocks.setAutoDelete(true);
   }
 
@@ -79,19 +82,19 @@ public:
   }
 
   const ID3v2::FrameFactory *ID3v2FrameFactory;
-  long ID3v2Location;
-  long ID3v2OriginalSize;
+  long long ID3v2Location;
+  long long ID3v2OriginalSize;
 
-  long ID3v1Location;
+  long long ID3v1Location;
 
-  TagUnion tag;
+  TripleTagUnion tag;
 
-  Properties *properties;
+  AudioProperties *properties;
   ByteVector xiphCommentData;
   BlockList blocks;
 
-  long flacStart;
-  long streamStart;
+  long long flacStart;
+  long long streamStart;
   bool scanned;
 };
 
@@ -99,16 +102,8 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-FLAC::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
-  TagLib::File(file),
-  d(new FilePrivate())
-{
-  if(isOpen())
-    read(readProperties);
-}
-
-FLAC::File::File(FileName file, ID3v2::FrameFactory *frameFactory,
-                 bool readProperties, Properties::ReadStyle) :
+FLAC::File::File(FileName file, bool readProperties, AudioProperties::ReadStyle,
+                 ID3v2::FrameFactory *frameFactory) :
   TagLib::File(file),
   d(new FilePrivate(frameFactory))
 {
@@ -116,8 +111,8 @@ FLAC::File::File(FileName file, ID3v2::FrameFactory *frameFactory,
     read(readProperties);
 }
 
-FLAC::File::File(IOStream *stream, ID3v2::FrameFactory *frameFactory,
-                 bool readProperties, Properties::ReadStyle) :
+FLAC::File::File(IOStream *stream, bool readProperties, AudioProperties::ReadStyle,
+                 ID3v2::FrameFactory *frameFactory) :
   TagLib::File(stream),
   d(new FilePrivate(frameFactory))
 {
@@ -135,22 +130,12 @@ TagLib::Tag *FLAC::File::tag() const
   return &d->tag;
 }
 
-PropertyMap FLAC::File::properties() const
-{
-  return d->tag.properties();
-}
-
-void FLAC::File::removeUnsupportedProperties(const StringList &unsupported)
-{
-  d->tag.removeUnsupportedProperties(unsupported);
-}
-
 PropertyMap FLAC::File::setProperties(const PropertyMap &properties)
 {
   return xiphComment(true)->setProperties(properties);
 }
 
-FLAC::Properties *FLAC::File::audioProperties() const
+FLAC::AudioProperties *FLAC::File::audioProperties() const
 {
   return d->properties;
 }
@@ -191,7 +176,7 @@ bool FLAC::File::save()
   ByteVector data;
   for(BlockConstIterator it = d->blocks.begin(); it != d->blocks.end(); ++it) {
     ByteVector blockData = (*it)->render();
-    ByteVector blockHeader = ByteVector::fromUInt(blockData.size());
+    ByteVector blockHeader = ByteVector::fromUInt32BE(blockData.size());
     blockHeader[0] = (*it)->code();
     data.append(blockHeader);
     data.append(blockData);
@@ -200,8 +185,8 @@ bool FLAC::File::save()
   // Compute the amount of padding, and append that to data.
   // TODO: Should be calculated in offset_t in taglib2.
 
-  long originalLength = d->streamStart - d->flacStart;
-  long paddingLength = originalLength - data.size() - 4;
+  long long originalLength = d->streamStart - d->flacStart;
+  long long paddingLength = originalLength - data.size() - 4;
 
   if(paddingLength <= 0) {
     paddingLength = MinPaddingLength;
@@ -209,7 +194,7 @@ bool FLAC::File::save()
   else {
     // Padding won't increase beyond 1% of the file size or 1MB.
 
-    long threshold = length() / 100;
+    long long threshold = length() / 100;
     threshold = std::max(threshold, MinPaddingLength);
     threshold = std::min(threshold, MaxPaddingLegnth);
 
@@ -217,14 +202,14 @@ bool FLAC::File::save()
       paddingLength = MinPaddingLength;
   }
 
-  ByteVector paddingHeader = ByteVector::fromUInt(paddingLength);
+  ByteVector paddingHeader = ByteVector::fromUInt32BE(static_cast<unsigned int>(paddingLength));
   paddingHeader[0] = static_cast<char>(MetadataBlock::Padding | LastBlockFlag);
   data.append(paddingHeader);
-  data.resize(static_cast<unsigned int>(data.size() + paddingLength));
+  data.resize(static_cast<size_t>(data.size() + paddingLength));
 
   // Write the data to the file
 
-  insert(data, d->flacStart, originalLength);
+  insert(data, d->flacStart, static_cast<size_t>(originalLength));
 
   d->streamStart += (static_cast<long>(data.size()) - originalLength);
 
@@ -241,7 +226,7 @@ bool FLAC::File::save()
       d->ID3v2Location = 0;
 
     data = ID3v2Tag()->render();
-    insert(data, d->ID3v2Location, d->ID3v2OriginalSize);
+    insert(data, d->ID3v2Location, static_cast<size_t>(d->ID3v2OriginalSize));
 
     d->flacStart   += (static_cast<long>(data.size()) - d->ID3v2OriginalSize);
     d->streamStart += (static_cast<long>(data.size()) - d->ID3v2OriginalSize);
@@ -256,7 +241,7 @@ bool FLAC::File::save()
     // ID3v2 tag is empty. Remove the old one.
 
     if(d->ID3v2Location >= 0) {
-      removeBlock(d->ID3v2Location, d->ID3v2OriginalSize);
+      removeBlock(d->ID3v2Location, static_cast<size_t>(d->ID3v2OriginalSize));
 
       d->flacStart   -= d->ID3v2OriginalSize;
       d->streamStart -= d->ID3v2OriginalSize;
@@ -298,11 +283,7 @@ bool FLAC::File::save()
 
 ID3v2::Tag *FLAC::File::ID3v2Tag(bool create)
 {
-  if(!create || d->tag[FlacID3v2Index])
-    return static_cast<ID3v2::Tag *>(d->tag[FlacID3v2Index]);
-
-  d->tag.set(FlacID3v2Index, new ID3v2::Tag);
-  return static_cast<ID3v2::Tag *>(d->tag[FlacID3v2Index]);
+  return d->tag.access<ID3v2::Tag>(FlacID3v2Index, create);
 }
 
 ID3v1::Tag *FLAC::File::ID3v1Tag(bool create)
@@ -318,18 +299,6 @@ Ogg::XiphComment *FLAC::File::xiphComment(bool create)
 void FLAC::File::setID3v2FrameFactory(const ID3v2::FrameFactory *factory)
 {
   d->ID3v2FrameFactory = factory;
-}
-
-ByteVector FLAC::File::streamInfoData()
-{
-  debug("FLAC::File::streamInfoData() -- This function is obsolete. Returning an empty ByteVector.");
-  return ByteVector();
-}
-
-long FLAC::File::streamLength()
-{
-  debug("FLAC::File::streamLength() -- This function is obsolete. Returning zero.");
-  return 0;
 }
 
 List<FLAC::Picture *> FLAC::File::pictureList()
@@ -441,14 +410,14 @@ void FLAC::File::read(bool readProperties)
 
     const ByteVector infoData = d->blocks.front()->render();
 
-    long streamLength;
+    long long streamLength;
 
     if(d->ID3v1Location >= 0)
       streamLength = d->ID3v1Location - d->streamStart;
     else
       streamLength = length() - d->streamStart;
 
-    d->properties = new Properties(infoData, streamLength);
+    d->properties = new AudioProperties(infoData, streamLength);
   }
 }
 
@@ -462,7 +431,7 @@ void FLAC::File::scan()
   if(!isValid())
     return;
 
-  long nextBlockOffset;
+  long long nextBlockOffset;
 
   if(d->ID3v2Location >= 0)
     nextBlockOffset = find("fLaC", d->ID3v2Location + d->ID3v2OriginalSize);
@@ -497,7 +466,7 @@ void FLAC::File::scan()
 
     const char blockType = header[0] & ~LastBlockFlag;
     const bool isLastBlock = (header[0] & LastBlockFlag) != 0;
-    const unsigned int blockLength = header.toUInt(1U, 3U);
+    const size_t blockLength = header.toUInt24BE(1);
 
     // First block should be the stream_info metadata
 

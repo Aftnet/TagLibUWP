@@ -29,7 +29,7 @@
 
 using namespace TagLib;
 
-class ASF::Properties::PropertiesPrivate
+class ASF::AudioProperties::PropertiesPrivate
 {
 public:
   PropertiesPrivate() :
@@ -38,7 +38,7 @@ public:
     sampleRate(0),
     channels(0),
     bitsPerSample(0),
-    codec(ASF::Properties::Unknown),
+    codec(ASF::AudioProperties::Unknown),
     encrypted(false) {}
 
   int length;
@@ -46,7 +46,7 @@ public:
   int sampleRate;
   int channels;
   int bitsPerSample;
-  ASF::Properties::Codec codec;
+  ASF::AudioProperties::Codec codec;
   String codecName;
   String codecDescription;
   bool encrypted;
@@ -56,68 +56,68 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-ASF::Properties::Properties() :
-  AudioProperties(AudioProperties::Average),
+ASF::AudioProperties::AudioProperties() :
+  TagLib::AudioProperties(),
   d(new PropertiesPrivate())
 {
 }
 
-ASF::Properties::~Properties()
+ASF::AudioProperties::~AudioProperties()
 {
   delete d;
 }
 
-int ASF::Properties::length() const
+int ASF::AudioProperties::length() const
 {
   return lengthInSeconds();
 }
 
-int ASF::Properties::lengthInSeconds() const
+int ASF::AudioProperties::lengthInSeconds() const
 {
   return d->length / 1000;
 }
 
-int ASF::Properties::lengthInMilliseconds() const
+int ASF::AudioProperties::lengthInMilliseconds() const
 {
   return d->length;
 }
 
-int ASF::Properties::bitrate() const
+int ASF::AudioProperties::bitrate() const
 {
   return d->bitrate;
 }
 
-int ASF::Properties::sampleRate() const
+int ASF::AudioProperties::sampleRate() const
 {
   return d->sampleRate;
 }
 
-int ASF::Properties::channels() const
+int ASF::AudioProperties::channels() const
 {
   return d->channels;
 }
 
-int ASF::Properties::bitsPerSample() const
+int ASF::AudioProperties::bitsPerSample() const
 {
   return d->bitsPerSample;
 }
 
-ASF::Properties::Codec ASF::Properties::codec() const
+ASF::AudioProperties::Codec ASF::AudioProperties::codec() const
 {
   return d->codec;
 }
 
-String ASF::Properties::codecName() const
+String ASF::AudioProperties::codecName() const
 {
   return d->codecName;
 }
 
-String ASF::Properties::codecDescription() const
+String ASF::AudioProperties::codecDescription() const
 {
   return d->codecDescription;
 }
 
-bool ASF::Properties::isEncrypted() const
+bool ASF::AudioProperties::isEncrypted() const
 {
   return d->encrypted;
 }
@@ -126,37 +126,32 @@ bool ASF::Properties::isEncrypted() const
 // private members
 ////////////////////////////////////////////////////////////////////////////////
 
-void ASF::Properties::setLength(int /*length*/)
-{
-  debug("ASF::Properties::setLength() -- This method is deprecated. Do not use.");
-}
-
-void ASF::Properties::setLengthInMilliseconds(int value)
+void ASF::AudioProperties::setLengthInMilliseconds(int value)
 {
   d->length = value;
 }
 
-void ASF::Properties::setBitrate(int value)
+void ASF::AudioProperties::setBitrate(int value)
 {
   d->bitrate = value;
 }
 
-void ASF::Properties::setSampleRate(int value)
+void ASF::AudioProperties::setSampleRate(int value)
 {
   d->sampleRate = value;
 }
 
-void ASF::Properties::setChannels(int value)
+void ASF::AudioProperties::setChannels(int value)
 {
   d->channels = value;
 }
 
-void ASF::Properties::setBitsPerSample(int value)
+void ASF::AudioProperties::setBitsPerSample(int value)
 {
   d->bitsPerSample = value;
 }
 
-void ASF::Properties::setCodec(int value)
+void ASF::AudioProperties::setCodec(int value)
 {
   switch(value)
   {
@@ -178,17 +173,17 @@ void ASF::Properties::setCodec(int value)
   }
 }
 
-void ASF::Properties::setCodecName(const String &value)
+void ASF::AudioProperties::setCodecName(const String &value)
 {
   d->codecName = value;
 }
 
-void ASF::Properties::setCodecDescription(const String &value)
+void ASF::AudioProperties::setCodecDescription(const String &value)
 {
   d->codecDescription = value;
 }
 
-void ASF::Properties::setEncrypted(bool value)
+void ASF::AudioProperties::setEncrypted(bool value)
 {
   d->encrypted = value;
 }

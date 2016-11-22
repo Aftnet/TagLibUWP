@@ -130,7 +130,7 @@ void Ogg::File::setPacket(unsigned int i, const ByteVector &p)
 const Ogg::PageHeader *Ogg::File::firstPageHeader()
 {
   if(!d->firstPageHeader) {
-    const long firstPageHeaderOffset = find("OggS");
+    const long long firstPageHeaderOffset = find("OggS");
     if(firstPageHeaderOffset < 0)
       return 0;
 
@@ -143,7 +143,7 @@ const Ogg::PageHeader *Ogg::File::firstPageHeader()
 const Ogg::PageHeader *Ogg::File::lastPageHeader()
 {
   if(!d->lastPageHeader) {
-    const long lastPageHeaderOffset = rfind("OggS");
+    const long long lastPageHeaderOffset = rfind("OggS");
     if(lastPageHeaderOffset < 0)
       return 0;
 
@@ -193,7 +193,7 @@ bool Ogg::File::readPages(unsigned int i)
 {
   while(true) {
     unsigned int packetIndex;
-    long offset;
+    long long offset;
 
     if(d->pages.isEmpty()) {
       packetIndex = 0;
@@ -276,10 +276,10 @@ void Ogg::File::writePacket(unsigned int i, const ByteVector &packet)
   for(it = pages.begin(); it != pages.end(); ++it)
     data.append((*it)->render());
 
-  const unsigned long originalOffset = firstPage->fileOffset();
-  const unsigned long originalLength = lastPage->fileOffset() + lastPage->size() - originalOffset;
+  const long long originalOffset = firstPage->fileOffset();
+  const long long originalLength = lastPage->fileOffset() + lastPage->size() - originalOffset;
 
-  insert(data, originalOffset, originalLength);
+  insert(data, originalOffset, static_cast<size_t>(originalLength));
 
   // Renumber the following pages if the pages have been split or merged.
 
@@ -287,7 +287,7 @@ void Ogg::File::writePacket(unsigned int i, const ByteVector &packet)
     = pages.back()->pageSequenceNumber() - lastPage->pageSequenceNumber();
 
   if(numberOfNewPages != 0) {
-    long pageOffset = originalOffset + data.size();
+    long long pageOffset = originalOffset + data.size();
 
     while(true) {
       Page page(this, pageOffset);

@@ -111,8 +111,8 @@ Frame *Frame::createTextualFrame(const String &key, const StringList &values) //
   // check if the key is contained in the key<=>frameID mapping
   ByteVector frameID = keyToFrameID(key);
   if(!frameID.isEmpty()) {
-    // Apple proprietary WFED (Podcast URL) is in fact a text frame.
-    if(frameID[0] == 'T' || frameID == "WFED"){ // text frame
+    // Apple proprietary WFED (Podcast URL), MVNM (Movement Name), MVIN (Movement Number) are in fact text frames.
+    if(frameID[0] == 'T' || frameID == "WFED" || frameID == "MVNM" || frameID == "MVIN"){ // text frame
       TextIdentificationFrame *frame = new TextIdentificationFrame(frameID, String::UTF8);
       frame->setText(values);
       return frame;
@@ -188,7 +188,7 @@ void Frame::setText(const String &)
 ByteVector Frame::render() const
 {
   ByteVector fieldData = renderFields();
-  d->header->setFrameSize(fieldData.size());
+  d->header->setFrameSize(static_cast<unsigned int>(fieldData.size()));
   ByteVector headerData = d->header->render();
 
   return headerData + fieldData;
@@ -235,10 +235,10 @@ void Frame::parse(const ByteVector &data)
 
 ByteVector Frame::fieldData(const ByteVector &frameData) const
 {
-  unsigned int headerSize = Header::size(d->header->version());
+  const size_t headerSize = Header::size(d->header->version());
 
-  unsigned int frameDataOffset = headerSize;
-  unsigned int frameDataLength = size();
+  size_t frameDataOffset = headerSize;
+  size_t frameDataLength = size();
 
   if(d->header->compression() || d->header->dataLengthIndicator()) {
     frameDataLength = SynchData::toUInt(frameData.mid(headerSize, 4));
@@ -262,27 +262,21 @@ ByteVector Frame::fieldData(const ByteVector &frameData) const
   return frameData.mid(frameDataOffset, frameDataLength);
 }
 
-String Frame::readStringField(const ByteVector &data, String::Type encoding, int *position)
+String Frame::readStringField(const ByteVector &data, String::Type encoding, size_t &position)
 {
-  int start = 0;
-
-  if(!position)
-    position = &start;
-
   ByteVector delimiter = textDelimiter(encoding);
 
-  int end = data.find(delimiter, *position, delimiter.size());
-
-  if(end < *position)
+  const size_t end = data.find(delimiter, position, delimiter.size());
+  if(end == ByteVector::npos() || end < position)
     return String();
 
   String str;
   if(encoding == String::Latin1)
-    str = Tag::latin1StringHandler()->parse(data.mid(*position, end - *position));
+    str = Tag::latin1StringHandler()->parse(data.mid(position, end - position));
   else
-    str = String(data.mid(*position, end - *position), encoding);
+    str = String(data.mid(position, end - position), encoding);
 
-  *position = end + delimiter.size();
+  position = end + delimiter.size();
 
   return str;
 }
@@ -392,6 +386,8 @@ namespace
     { "TDES", "PODCASTDESC" },
     { "TGID", "PODCASTID" },
     { "WFED", "PODCASTURL" },
+    { "MVNM", "MOVEMENTNAME" },
+    { "MVIN", "MOVEMENTNUMBER" },
   };
   const size_t frameTranslationSize = sizeof(frameTranslation) / sizeof(frameTranslation[0]);
 
@@ -474,8 +470,8 @@ PropertyMap Frame::asProperties() const
   // workaround until this function is virtual
   if(id == "TXXX")
     return dynamic_cast< const UserTextIdentificationFrame* >(this)->asProperties();
-  // Apple proprietary WFED (Podcast URL) is in fact a text frame.
-  else if(id[0] == 'T' || id == "WFED")
+  // Apple proprietary WFED (Podcast URL), MVNM (Movement Name), MVIN (Movement Number) are in fact text frames.
+  else if(id[0] == 'T' || id == "WFED" || id == "MVNM" || id == "MVIN")
     return dynamic_cast< const TextIdentificationFrame* >(this)->asProperties();
   else if(id == "WXXX")
     return dynamic_cast< const UserUrlLinkFrame* >(this)->asProperties();
@@ -621,7 +617,7 @@ void Frame::Header::setData(const ByteVector &data, unsigned int version)
       return;
     }
 
-    d->frameSize = data.toUInt(3, 3, true);
+    d->frameSize = data.toUInt24BE(3);
 
     break;
   }
@@ -649,7 +645,7 @@ void Frame::Header::setData(const ByteVector &data, unsigned int version)
     // Set the size -- the frame size is the four bytes starting at byte four in
     // the frame header (structure 4)
 
-    d->frameSize = data.toUInt(4U);
+    d->frameSize = data.toUInt32BE(4);
 
     { // read the first byte of flags
       std::bitset<8> flags(data[8]);
@@ -696,7 +692,7 @@ void Frame::Header::setData(const ByteVector &data, unsigned int version)
     // iTunes writes v2.4 tags with v2.3-like frame sizes
     if(d->frameSize > 127) {
       if(!isValidFrameID(data.mid(d->frameSize + 10, 4))) {
-        unsigned int uintSize = data.toUInt(4U);
+        const unsigned int uintSize = data.toUInt32BE(4);
         if(isValidFrameID(data.mid(uintSize + 10, 4))) {
           d->frameSize = uintSize;
         }
@@ -810,7 +806,7 @@ ByteVector Frame::Header::render() const
 
   ByteVector v = d->frameID +
     (d->version == 3
-      ? ByteVector::fromUInt(d->frameSize)
+      ? ByteVector::fromUInt32BE(d->frameSize)
       : SynchData::fromUInt(d->frameSize)) +
     flags;
 

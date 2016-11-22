@@ -26,6 +26,7 @@
 #ifdef _WIN32
 # include <windows.h>
 # include <tstring.h>
+# include <tsmartptr.h>
 #endif
 
 #include "tiostream.h"
@@ -49,49 +50,51 @@ namespace
   }
 }
 
-// m_name is no longer used, but kept for backward compatibility.
+class FileName::FileNamePrivate
+{
+public:
+  FileNamePrivate() :
+    data(new std::wstring()) {}
+
+  FileNamePrivate(const wchar_t *name) :
+    data(new std::wstring(name)) {}
+
+  FileNamePrivate(const char *name) :
+    data(new std::wstring(ansiToUnicode(name))) {}
+
+  SHARED_PTR<std::wstring> data;
+};
 
 FileName::FileName(const wchar_t *name) :
-  m_name(),
-  m_wname(name)
+  d(new FileNamePrivate(name))
 {
 }
 
 FileName::FileName(const char *name) :
-  m_name(),
-  m_wname(ansiToUnicode(name))
+  d(new FileNamePrivate(name))
 {
 }
 
 FileName::FileName(const FileName &name) :
-  m_name(),
-  m_wname(name.m_wname)
+  d(new FileNamePrivate())
 {
+  *d = *name.d;
 }
 
-FileName::operator const wchar_t *() const
+FileName::~FileName()
 {
-  return m_wname.c_str();
+  delete d;
 }
 
-FileName::operator const char *() const
+FileName &FileName::operator=(const FileName &name)
 {
-  return m_name.c_str();
+  *d = *name.d;
+  return *this;
 }
 
-const std::wstring &FileName::wstr() const
+const wchar_t *FileName::wstr() const
 {
-  return m_wname;
-}
-
-const std::string &FileName::str() const
-{
-  return m_name;
-}
-
-String FileName::toString() const
-{
-  return String(m_wname.c_str());
+  return d->data->c_str();
 }
 
 #endif  // _WIN32

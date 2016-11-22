@@ -23,18 +23,17 @@
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
 
-#include <climits>
-
 #include <tdebug.h>
 #include <tstring.h>
+
 #include "mp4atom.h"
 
 using namespace TagLib;
 
 const char *MP4::Atom::containers[11] = {
-    "moov", "udta", "mdia", "meta", "ilst",
-    "stbl", "minf", "moof", "traf", "trak",
-    "stsd"
+  "moov", "udta", "mdia", "meta", "ilst",
+  "stbl", "minf", "moof", "traf", "trak",
+  "stsd"
 };
 
 MP4::Atom::Atom(File *file)
@@ -52,21 +51,17 @@ MP4::Atom::Atom(File *file)
     return;
   }
 
-  length = header.toUInt();
+  length = header.toUInt32BE(0);
 
-  if(length == 1) {
-    const long long longLength = file->readBlock(8).toLongLong();
-    if(longLength <= LONG_MAX) {
-      // The atom has a 64-bit length, but it's actually a 31-bit value or long is 64-bit.
-      length = static_cast<long>(longLength);
-    }
-    else {
-      debug("MP4: 64-bit atoms are not supported");
-      length = 0;
-      file->seek(0, File::End);
-      return;
-    }
+  if(length == 0) {
+    // The last atom which extends to the end of the file.
+    length = file->length() - offset;
   }
+  else if(length == 1) {
+    // The atom has a 64-bit length.
+    length = file->readBlock(8).toInt64BE(0);
+  }
+
   if(length < 8) {
     debug("MP4: Invalid atom size");
     length = 0;
@@ -150,7 +145,7 @@ MP4::Atoms::Atoms(File *file)
   atoms.setAutoDelete(true);
 
   file->seek(0, File::End);
-  long end = file->tell();
+  long long end = file->tell();
   file->seek(0);
   while(file->tell() + 8 <= end) {
     MP4::Atom *atom = new MP4::Atom(file);

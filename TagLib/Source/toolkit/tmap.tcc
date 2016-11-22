@@ -31,20 +31,23 @@ namespace TagLib {
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-// BIC change to RefCounter
 template <class Key, class T>
 template <class KeyP, class TP>
-class Map<Key, T>::MapPrivate : public RefCounterOld
+class Map<Key, T>::MapPrivate : public RefCounter
 {
 public:
-  MapPrivate() : RefCounterOld() {}
-#ifdef WANT_CLASS_INSTANTIATION_OF_MAP
-  MapPrivate(const std::map<class KeyP, class TP>& m) : RefCounterOld(), map(m) {}
-  std::map<class KeyP, class TP> map;
-#else
-  MapPrivate(const std::map<KeyP, TP>& m) : RefCounterOld(), map(m) {}
-  std::map<KeyP, TP> map;
-#endif
+  MapPrivate()
+    : RefCounter()
+  {
+  }
+
+  MapPrivate(const MapType &m)
+    : RefCounter()
+    , map(m)
+  {
+  }
+
+  MapType map;
 };
 
 template <class Key, class T>
@@ -63,7 +66,7 @@ template <class Key, class T>
 Map<Key, T>::~Map()
 {
   if(d->deref())
-    delete(d);
+    delete d;
 }
 
 template <class Key, class T>
@@ -150,9 +153,9 @@ Map<Key, T> &Map<Key,T>::erase(const Key &key)
 }
 
 template <class Key, class T>
-unsigned int Map<Key, T>::size() const
+size_t Map<Key, T>::size() const
 {
-  return static_cast<unsigned int>(d->map.size());
+  return d->map.size();
 }
 
 template <class Key, class T>
@@ -190,10 +193,12 @@ void Map<Key, T>::swap(Map<Key, T> &m)
 template <class Key, class T>
 void Map<Key, T>::detach()
 {
-  if(d->count() > 1) {
+  if(!d->unique()) {
     d->deref();
     d = new MapPrivate<Key, T>(d->map);
   }
 }
 
 } // namespace TagLib
+
+

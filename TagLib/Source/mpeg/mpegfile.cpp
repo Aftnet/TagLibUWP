@@ -63,24 +63,24 @@ public:
 
   const ID3v2::FrameFactory *ID3v2FrameFactory;
 
-  long ID3v2Location;
-  long ID3v2OriginalSize;
+  long long ID3v2Location;
+  long long ID3v2OriginalSize;
 
-  long APELocation;
-  long APEOriginalSize;
+  long long APELocation;
+  long long APEOriginalSize;
 
-  long ID3v1Location;
+  long long ID3v1Location;
 
-  TagUnion tag;
+  TripleTagUnion tag;
 
-  Properties *properties;
+  AudioProperties *properties;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-MPEG::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
+MPEG::File::File(FileName file, bool readProperties, AudioProperties::ReadStyle) :
   TagLib::File(file),
   d(new FilePrivate())
 {
@@ -89,7 +89,7 @@ MPEG::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
 }
 
 MPEG::File::File(FileName file, ID3v2::FrameFactory *frameFactory,
-                 bool readProperties, Properties::ReadStyle) :
+                 bool readProperties, AudioProperties::ReadStyle) :
   TagLib::File(file),
   d(new FilePrivate(frameFactory))
 {
@@ -98,7 +98,7 @@ MPEG::File::File(FileName file, ID3v2::FrameFactory *frameFactory,
 }
 
 MPEG::File::File(IOStream *stream, ID3v2::FrameFactory *frameFactory,
-                 bool readProperties, Properties::ReadStyle) :
+                 bool readProperties, AudioProperties::ReadStyle) :
   TagLib::File(stream),
   d(new FilePrivate(frameFactory))
 {
@@ -116,16 +116,6 @@ TagLib::Tag *MPEG::File::tag() const
   return &d->tag;
 }
 
-PropertyMap MPEG::File::properties() const
-{
-  return d->tag.properties();
-}
-
-void MPEG::File::removeUnsupportedProperties(const StringList &properties)
-{
-  d->tag.removeUnsupportedProperties(properties);
-}
-
 PropertyMap MPEG::File::setProperties(const PropertyMap &properties)
 {
   // update ID3v1 tag if it exists, but ignore the return value
@@ -136,7 +126,7 @@ PropertyMap MPEG::File::setProperties(const PropertyMap &properties)
   return ID3v2Tag(true)->setProperties(properties);
 }
 
-MPEG::Properties *MPEG::File::audioProperties() const
+MPEG::AudioProperties *MPEG::File::audioProperties() const
 {
   return d->properties;
 }
@@ -144,21 +134,6 @@ MPEG::Properties *MPEG::File::audioProperties() const
 bool MPEG::File::save()
 {
   return save(AllTags);
-}
-
-bool MPEG::File::save(int tags)
-{
-  return save(tags, true);
-}
-
-bool MPEG::File::save(int tags, bool stripOthers)
-{
-  return save(tags, stripOthers, 4);
-}
-
-bool MPEG::File::save(int tags, bool stripOthers, int id3v2Version)
-{
-  return save(tags, stripOthers, id3v2Version, true);
 }
 
 bool MPEG::File::save(int tags, bool stripOthers, int id3v2Version, bool duplicateTags)
@@ -197,7 +172,7 @@ bool MPEG::File::save(int tags, bool stripOthers, int id3v2Version, bool duplica
         d->ID3v2Location = 0;
 
       const ByteVector data = ID3v2Tag()->render(id3v2Version);
-      insert(data, d->ID3v2Location, d->ID3v2OriginalSize);
+      insert(data, d->ID3v2Location, static_cast<size_t>(d->ID3v2OriginalSize));
 
       if(d->APELocation >= 0)
         d->APELocation += (static_cast<long>(data.size()) - d->ID3v2OriginalSize);
@@ -253,7 +228,7 @@ bool MPEG::File::save(int tags, bool stripOthers, int id3v2Version, bool duplica
       }
 
       const ByteVector data = APETag()->render();
-      insert(data, d->APELocation, d->APEOriginalSize);
+      insert(data, d->APELocation, static_cast<size_t>(d->APEOriginalSize));
 
       if(d->ID3v1Location >= 0)
         d->ID3v1Location += (static_cast<long>(data.size()) - d->APEOriginalSize);
@@ -299,7 +274,7 @@ bool MPEG::File::strip(int tags, bool freeMemory)
   }
 
   if((tags & ID3v2) && d->ID3v2Location >= 0) {
-    removeBlock(d->ID3v2Location, d->ID3v2OriginalSize);
+    removeBlock(d->ID3v2Location, static_cast<size_t>(d->ID3v2OriginalSize));
 
     if(d->APELocation >= 0)
       d->APELocation -= d->ID3v2OriginalSize;
@@ -324,7 +299,7 @@ bool MPEG::File::strip(int tags, bool freeMemory)
   }
 
   if((tags & APE) && d->APELocation >= 0) {
-    removeBlock(d->APELocation, d->APEOriginalSize);
+    removeBlock(d->APELocation, static_cast<size_t>(d->APEOriginalSize));
 
     if(d->ID3v1Location >= 0)
       d->ID3v1Location -= d->APEOriginalSize;
@@ -344,7 +319,7 @@ void MPEG::File::setID3v2FrameFactory(const ID3v2::FrameFactory *factory)
   d->ID3v2FrameFactory = factory;
 }
 
-long MPEG::File::nextFrameOffset(long position)
+long long MPEG::File::nextFrameOffset(long long position)
 {
   bool foundLastSyncPattern = false;
 
@@ -370,25 +345,25 @@ long MPEG::File::nextFrameOffset(long position)
   }
 }
 
-long MPEG::File::previousFrameOffset(long position)
+long long MPEG::File::previousFrameOffset(long long position)
 {
   bool foundFirstSyncPattern = false;
   ByteVector buffer;
 
-  while (position > 0) {
-    long size = std::min<long>(position, bufferSize());
+  while(position > 0) {
+    size_t size = static_cast<size_t>(std::min<long long>(position, bufferSize()));
     position -= size;
 
     seek(position);
     buffer = readBlock(size);
 
-    if(buffer.size() <= 0)
+    if(buffer.isEmpty())
       break;
 
     if(foundFirstSyncPattern && firstSyncByte(buffer[buffer.size() - 1]))
       return position + buffer.size() - 1;
 
-    for(int i = buffer.size() - 2; i >= 0; i--) {
+    for(int i = static_cast<int>(buffer.size()) - 2; i >= 0; i--) {
       if(firstSyncByte(buffer[i]) && secondSynchByte(buffer[i + 1]))
         return position + i;
     }
@@ -398,9 +373,9 @@ long MPEG::File::previousFrameOffset(long position)
   return -1;
 }
 
-long MPEG::File::firstFrameOffset()
+long long MPEG::File::firstFrameOffset()
 {
-  long position = 0;
+  long long position = 0;
 
   if(hasID3v2Tag())
     position = d->ID3v2Location + ID3v2Tag()->header()->completeTagSize();
@@ -408,9 +383,9 @@ long MPEG::File::firstFrameOffset()
   return nextFrameOffset(position);
 }
 
-long MPEG::File::lastFrameOffset()
+long long MPEG::File::lastFrameOffset()
 {
-  long position;
+  long long position;
 
   if(hasAPETag())
     position = d->APELocation - 1;
@@ -470,7 +445,7 @@ void MPEG::File::read(bool readProperties)
   }
 
   if(readProperties)
-    d->properties = new Properties(this);
+    d->properties = new AudioProperties(this);
 
   // Make sure that we have our default tag types available.
 
@@ -478,7 +453,7 @@ void MPEG::File::read(bool readProperties)
   ID3v1Tag(true);
 }
 
-long MPEG::File::findID3v2()
+long long MPEG::File::findID3v2()
 {
   if(!isValid())
     return -1;
@@ -503,11 +478,11 @@ long MPEG::File::findID3v2()
   // at the beginning of the file.
   // We don't care about the inefficiency of the code, since this is a seldom case.
 
-  const long tagOffset = find(headerID);
+  const long long tagOffset = find(headerID);
   if(tagOffset < 0)
     return -1;
 
-  const long frameOffset = firstFrameOffset();
+  const long long frameOffset = firstFrameOffset();
   if(frameOffset < tagOffset)
     return -1;
 

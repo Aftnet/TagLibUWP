@@ -141,14 +141,6 @@ void APE::Item::setBinaryData(const ByteVector &value)
   d->text.clear();
 }
 
-ByteVector APE::Item::value() const
-{
-  // This seems incorrect as it won't be actually rendering the value to keep it
-  // up to date.
-
-  return d->value;
-}
-
 void APE::Item::setKey(const String &key)
 {
   d->key = key;
@@ -184,7 +176,7 @@ void APE::Item::appendValues(const StringList &values)
 
 int APE::Item::size() const
 {
-  int result = 8 + d->key.size() + 1;
+  size_t result = 8 + d->key.size() + 1;
   switch(d->type) {
     case Text:
       if(!d->text.isEmpty()) {
@@ -202,12 +194,7 @@ int APE::Item::size() const
       result += d->value.size();
       break;
   }
-  return result;
-}
-
-StringList APE::Item::toStringList() const
-{
-  return d->text;
+  return static_cast<int>(result);
 }
 
 StringList APE::Item::values() const
@@ -249,8 +236,8 @@ void APE::Item::parse(const ByteVector &data)
     return;
   }
 
-  const unsigned int valueLength  = data.toUInt(0, false);
-  const unsigned int flags        = data.toUInt(4, false);
+  const unsigned int valueLength  = data.toUInt32LE(0);
+  const unsigned int flags        = data.toUInt32LE(4);
 
   // An item key can contain ASCII characters from 0x20 up to 0x7E, not UTF-8.
   // We assume that the validity of the given key has been checked.
@@ -291,8 +278,8 @@ ByteVector APE::Item::render() const
   else
     value.append(d->value);
 
-  data.append(ByteVector::fromUInt(value.size(), false));
-  data.append(ByteVector::fromUInt(flags, false));
+  data.append(ByteVector::fromUInt32LE(value.size()));
+  data.append(ByteVector::fromUInt32LE(flags));
   data.append(d->key.data(String::Latin1));
   data.append(ByteVector('\0'));
   data.append(value);

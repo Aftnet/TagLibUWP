@@ -69,25 +69,25 @@ public:
     delete properties;
   }
 
-  long APELocation;
-  long APESize;
+  long long APELocation;
+  long long APESize;
 
-  long ID3v1Location;
+  long long ID3v1Location;
 
   ID3v2::Header *ID3v2Header;
-  long ID3v2Location;
-  long ID3v2Size;
+  long long ID3v2Location;
+  long long ID3v2Size;
 
-  TagUnion tag;
+  DoubleTagUnion tag;
 
-  Properties *properties;
+  AudioProperties *properties;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
-APE::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
+APE::File::File(FileName file, bool readProperties, AudioProperties::ReadStyle) :
   TagLib::File(file),
   d(new FilePrivate())
 {
@@ -95,7 +95,7 @@ APE::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
     read(readProperties);
 }
 
-APE::File::File(IOStream *stream, bool readProperties, Properties::ReadStyle) :
+APE::File::File(IOStream *stream, bool readProperties, AudioProperties::ReadStyle) :
   TagLib::File(stream),
   d(new FilePrivate())
 {
@@ -113,16 +113,6 @@ TagLib::Tag *APE::File::tag() const
   return &d->tag;
 }
 
-PropertyMap APE::File::properties() const
-{
-  return d->tag.properties();
-}
-
-void APE::File::removeUnsupportedProperties(const StringList &properties)
-{
-  d->tag.removeUnsupportedProperties(properties);
-}
-
 PropertyMap APE::File::setProperties(const PropertyMap &properties)
 {
   if(ID3v1Tag())
@@ -131,7 +121,7 @@ PropertyMap APE::File::setProperties(const PropertyMap &properties)
   return APETag(true)->setProperties(properties);
 }
 
-APE::Properties *APE::File::audioProperties() const
+APE::AudioProperties *APE::File::audioProperties() const
 {
   return d->properties;
 }
@@ -183,7 +173,7 @@ bool APE::File::save()
     }
 
     const ByteVector data = APETag()->render();
-    insert(data, d->APELocation, d->APESize);
+    insert(data, d->APELocation, static_cast<size_t>(d->APESize));
 
     if(d->ID3v1Location >= 0)
       d->ID3v1Location += (static_cast<long>(data.size()) - d->APESize);
@@ -195,7 +185,7 @@ bool APE::File::save()
     // APE tag is empty. Remove the old one.
 
     if(d->APELocation >= 0) {
-      removeBlock(d->APELocation, d->APESize);
+      removeBlock(d->APELocation, static_cast<size_t>(d->APESize));
 
       if(d->ID3v1Location >= 0)
         d->ID3v1Location -= d->APESize;
@@ -280,7 +270,7 @@ void APE::File::read(bool readProperties)
 
   if(readProperties) {
 
-    long streamLength;
+    long long streamLength;
 
     if(d->APELocation >= 0)
       streamLength = d->APELocation;
@@ -297,6 +287,6 @@ void APE::File::read(bool readProperties)
       seek(0);
     }
 
-    d->properties = new Properties(this, streamLength);
+    d->properties = new AudioProperties(this, streamLength);
   }
 }

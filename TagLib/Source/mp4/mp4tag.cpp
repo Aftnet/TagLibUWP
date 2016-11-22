@@ -22,9 +22,10 @@
  *   License Version 1.1.  You may obtain a copy of the License at         *
  *   http://www.mozilla.org/MPL/                                           *
  ***************************************************************************/
-
+#include <cstring>
 #include <tdebug.h>
 #include <tstring.h>
+#include <tpicturemap.h>
 #include <tpropertymap.h>
 #include "mp4atom.h"
 #include "mp4tag.h"
@@ -71,10 +72,10 @@ MP4::Tag::Tag(TagLib::File *file, MP4::Atoms *atoms) :
       parseIntPair(atom);
     }
     else if(atom->name == "cpil" || atom->name == "pgap" || atom->name == "pcst" ||
-            atom->name == "hdvd") {
+            atom->name == "hdvd" || atom->name == "shwm") {
       parseBool(atom);
     }
-    else if(atom->name == "tmpo") {
+    else if(atom->name == "tmpo" || atom->name == "\251mvi" || atom->name == "\251mvc") {
       parseInt(atom);
     }
     else if(atom->name == "tvsn" || atom->name == "tves" || atom->name == "cnID" ||
@@ -108,18 +109,18 @@ MP4::AtomDataList
 MP4::Tag::parseData2(const MP4::Atom *atom, int expectedFlags, bool freeForm)
 {
   AtomDataList result;
-  ByteVector data = d->file->readBlock(atom->length - 8);
+  ByteVector data = d->file->readBlock(static_cast<size_t>(atom->length - 8));
   int i = 0;
-  unsigned int pos = 0;
+  size_t pos = 0;
   while(pos < data.size()) {
-    const int length = static_cast<int>(data.toUInt(pos));
+    const int length = static_cast<int>(data.toUInt32BE(pos));
     if(length < 12) {
       debug("MP4: Too short atom");
       return result;
     }
 
     const ByteVector name = data.mid(pos + 4, 4);
-    const int flags = static_cast<int>(data.toUInt(pos + 8));
+    const int flags = static_cast<int>(data.toUInt32BE(pos + 8));
     if(freeForm && i < 2) {
       if(i == 0 && name != "mean") {
         debug("MP4: Unexpected atom \"" + name + "\", expecting \"mean\"");
@@ -162,7 +163,7 @@ MP4::Tag::parseInt(const MP4::Atom *atom)
 {
   ByteVectorList data = parseData(atom);
   if(!data.isEmpty()) {
-    addItem(atom->name, (int)data[0].toShort());
+    addItem(atom->name, (int)data[0].toInt16BE(0));
   }
 }
 
@@ -171,7 +172,7 @@ MP4::Tag::parseUInt(const MP4::Atom *atom)
 {
   ByteVectorList data = parseData(atom);
   if(!data.isEmpty()) {
-    addItem(atom->name, data[0].toUInt());
+    addItem(atom->name, data[0].toUInt32BE(0));
   }
 }
 
@@ -180,7 +181,7 @@ MP4::Tag::parseLongLong(const MP4::Atom *atom)
 {
   ByteVectorList data = parseData(atom);
   if(!data.isEmpty()) {
-    addItem(atom->name, data[0].toLongLong());
+    addItem(atom->name, data[0].toInt64BE(0));
   }
 }
 
@@ -198,7 +199,7 @@ MP4::Tag::parseGnre(const MP4::Atom *atom)
 {
   ByteVectorList data = parseData(atom);
   if(!data.isEmpty()) {
-    int idx = (int)data[0].toShort();
+    int idx = (int)data[0].toInt16BE(0);
     if(idx > 0) {
       addItem("\251gen", StringList(ID3v1::genre(idx - 1)));
     }
@@ -210,8 +211,8 @@ MP4::Tag::parseIntPair(const MP4::Atom *atom)
 {
   ByteVectorList data = parseData(atom);
   if(!data.isEmpty()) {
-    const int a = data[0].toShort(2U);
-    const int b = data[0].toShort(4U);
+    const int a = data[0].toInt16BE(2);
+    const int b = data[0].toInt16BE(4);
     addItem(atom->name, MP4::Item(a, b));
   }
 }
@@ -284,17 +285,17 @@ void
 MP4::Tag::parseCovr(const MP4::Atom *atom)
 {
   MP4::CoverArtList value;
-  ByteVector data = d->file->readBlock(atom->length - 8);
+  ByteVector data = d->file->readBlock(static_cast<size_t>(atom->length - 8));
   unsigned int pos = 0;
   while(pos < data.size()) {
-    const int length = static_cast<int>(data.toUInt(pos));
+    const int length = static_cast<int>(data.toUInt32BE(pos));
     if(length < 12) {
       debug("MP4: Too short atom");
       break;;
     }
 
     const ByteVector name = data.mid(pos + 4, 4);
-    const int flags = static_cast<int>(data.toUInt(pos + 8));
+    const int flags = static_cast<int>(data.toUInt32BE(pos + 8));
     if(name != "data") {
       debug("MP4: Unexpected atom \"" + name + "\", expecting \"data\"");
       break;
@@ -317,7 +318,7 @@ ByteVector
 MP4::Tag::padIlst(const ByteVector &data, int length) const
 {
   if(length == -1) {
-    length = ((data.size() + 1023) & ~1023) - data.size();
+    length = static_cast<int>(((data.size() + 1023) & ~1023) - data.size());
   }
   return renderAtom("free", ByteVector(length, '\1'));
 }
@@ -325,7 +326,7 @@ MP4::Tag::padIlst(const ByteVector &data, int length) const
 ByteVector
 MP4::Tag::renderAtom(const ByteVector &name, const ByteVector &data) const
 {
-  return ByteVector::fromUInt(data.size() + 8) + name + data;
+  return ByteVector::fromUInt32BE(data.size() + 8) + name + data;
 }
 
 ByteVector
@@ -333,7 +334,7 @@ MP4::Tag::renderData(const ByteVector &name, int flags, const ByteVectorList &da
 {
   ByteVector result;
   for(ByteVectorList::ConstIterator it = data.begin(); it != data.end(); ++it) {
-    result.append(renderAtom("data", ByteVector::fromUInt(flags) + ByteVector(4, '\0') + *it));
+    result.append(renderAtom("data", ByteVector::fromUInt32BE(flags) + ByteVector(4, '\0') + *it));
   }
   return renderAtom(name, result);
 }
@@ -350,7 +351,7 @@ ByteVector
 MP4::Tag::renderInt(const ByteVector &name, const MP4::Item &item) const
 {
   ByteVectorList data;
-  data.append(ByteVector::fromShort(item.toInt()));
+  data.append(ByteVector::fromUInt16BE(item.toInt()));
   return renderData(name, TypeInteger, data);
 }
 
@@ -358,7 +359,7 @@ ByteVector
 MP4::Tag::renderUInt(const ByteVector &name, const MP4::Item &item) const
 {
   ByteVectorList data;
-  data.append(ByteVector::fromUInt(item.toUInt()));
+  data.append(ByteVector::fromUInt32BE(item.toUInt()));
   return renderData(name, TypeInteger, data);
 }
 
@@ -366,7 +367,7 @@ ByteVector
 MP4::Tag::renderLongLong(const ByteVector &name, const MP4::Item &item) const
 {
   ByteVectorList data;
-  data.append(ByteVector::fromLongLong(item.toLongLong()));
+  data.append(ByteVector::fromUInt64BE(item.toLongLong()));
   return renderData(name, TypeInteger, data);
 }
 
@@ -383,8 +384,8 @@ MP4::Tag::renderIntPair(const ByteVector &name, const MP4::Item &item) const
 {
   ByteVectorList data;
   data.append(ByteVector(2, '\0') +
-              ByteVector::fromShort(item.toIntPair().first) +
-              ByteVector::fromShort(item.toIntPair().second) +
+              ByteVector::fromUInt16BE(item.toIntPair().first) +
+              ByteVector::fromUInt16BE(item.toIntPair().second) +
               ByteVector(2, '\0'));
   return renderData(name, TypeImplicit, data);
 }
@@ -394,8 +395,8 @@ MP4::Tag::renderIntPairNoTrailing(const ByteVector &name, const MP4::Item &item)
 {
   ByteVectorList data;
   data.append(ByteVector(2, '\0') +
-              ByteVector::fromShort(item.toIntPair().first) +
-              ByteVector::fromShort(item.toIntPair().second));
+              ByteVector::fromUInt16BE(item.toIntPair().first) +
+              ByteVector::fromUInt16BE(item.toIntPair().second));
   return renderData(name, TypeImplicit, data);
 }
 
@@ -416,7 +417,7 @@ MP4::Tag::renderCovr(const ByteVector &name, const MP4::Item &item) const
   ByteVector data;
   MP4::CoverArtList value = item.toCoverArtList();
   for(MP4::CoverArtList::ConstIterator it = value.begin(); it != value.end(); ++it) {
-    data.append(renderAtom("data", ByteVector::fromUInt(it->format()) +
+    data.append(renderAtom("data", ByteVector::fromUInt32BE(it->format()) +
                                    ByteVector(4, '\0') + it->data()));
   }
   return renderAtom(name, data);
@@ -431,8 +432,8 @@ MP4::Tag::renderFreeForm(const String &name, const MP4::Item &item) const
     return ByteVector();
   }
   ByteVector data;
-  data.append(renderAtom("mean", ByteVector::fromUInt(0) + header[1].data(String::UTF8)));
-  data.append(renderAtom("name", ByteVector::fromUInt(0) + header[2].data(String::UTF8)));
+  data.append(renderAtom("mean", ByteVector::fromUInt32BE(0) + header[1].data(String::UTF8)));
+  data.append(renderAtom("name", ByteVector::fromUInt32BE(0) + header[2].data(String::UTF8)));
   AtomDataType type = item.atomDataType();
   if(type == TypeUndefined) {
     if(!item.toStringList().isEmpty()) {
@@ -445,13 +446,13 @@ MP4::Tag::renderFreeForm(const String &name, const MP4::Item &item) const
   if(type == TypeUTF8) {
     StringList value = item.toStringList();
     for(StringList::ConstIterator it = value.begin(); it != value.end(); ++it) {
-      data.append(renderAtom("data", ByteVector::fromUInt(type) + ByteVector(4, '\0') + it->data(String::UTF8)));
+      data.append(renderAtom("data", ByteVector::fromUInt32BE(type) + ByteVector(4, '\0') + it->data(String::UTF8)));
     }
   }
   else {
     ByteVectorList value = item.toByteVectorList();
     for(ByteVectorList::ConstIterator it = value.begin(); it != value.end(); ++it) {
-      data.append(renderAtom("data", ByteVector::fromUInt(type) + ByteVector(4, '\0') + *it));
+      data.append(renderAtom("data", ByteVector::fromUInt32BE(type) + ByteVector(4, '\0') + *it));
     }
   }
   return renderAtom("----", data);
@@ -472,10 +473,11 @@ MP4::Tag::save()
     else if(name == "disk") {
       data.append(renderIntPairNoTrailing(name.data(String::Latin1), it->second));
     }
-    else if(name == "cpil" || name == "pgap" || name == "pcst" || name == "hdvd") {
+    else if(name == "cpil" || name == "pgap" || name == "pcst" || name == "hdvd" ||
+            name == "shwm") {
       data.append(renderBool(name.data(String::Latin1), it->second));
     }
-    else if(name == "tmpo") {
+    else if(name == "tmpo" || name == "\251mvi" || name == "\251mvc") {
       data.append(renderInt(name.data(String::Latin1), it->second));
     }
     else if(name == "tvsn" || name == "tves" || name == "cnID" ||
@@ -522,25 +524,25 @@ MP4::Tag::updateParents(const AtomList &path, long delta, int ignore)
 
   for(AtomList::ConstIterator it = path.begin(); it != itEnd; ++it) {
     d->file->seek((*it)->offset);
-    long size = d->file->readBlock(4).toUInt();
+    long size = d->file->readBlock(4).toUInt32BE(0);
     // 64-bit
     if (size == 1) {
       d->file->seek(4, File::Current); // Skip name
-      long long longSize = d->file->readBlock(8).toLongLong();
+      long long longSize = d->file->readBlock(8).toInt64BE(0);
       // Seek the offset of the 64-bit size
       d->file->seek((*it)->offset + 8);
-      d->file->writeBlock(ByteVector::fromLongLong(longSize + delta));
+      d->file->writeBlock(ByteVector::fromUInt64BE(longSize + delta));
     }
     // 32-bit
     else {
       d->file->seek((*it)->offset);
-      d->file->writeBlock(ByteVector::fromUInt(size + delta));
+      d->file->writeBlock(ByteVector::fromUInt32BE(size + delta));
     }
   }
 }
 
 void
-MP4::Tag::updateOffsets(long delta, long offset)
+MP4::Tag::updateOffsets(long delta, long long offset)
 {
   MP4::Atom *moov = d->atoms->find("moov");
   if(moov) {
@@ -551,16 +553,16 @@ MP4::Tag::updateOffsets(long delta, long offset)
         atom->offset += delta;
       }
       d->file->seek(atom->offset + 12);
-      ByteVector data = d->file->readBlock(atom->length - 12);
-      unsigned int count = data.toUInt();
+      ByteVector data = d->file->readBlock(static_cast<size_t>(atom->length - 12));
+      unsigned int count = data.toUInt32BE(0);
       d->file->seek(atom->offset + 16);
-      unsigned int pos = 4;
+      size_t pos = 4;
       while(count--) {
-        long o = static_cast<long>(data.toUInt(pos));
+        long o = data.toUInt32BE(pos);
         if(o > offset) {
           o += delta;
         }
-        d->file->writeBlock(ByteVector::fromUInt(o));
+        d->file->writeBlock(ByteVector::fromUInt32BE(o));
         pos += 4;
       }
     }
@@ -572,16 +574,16 @@ MP4::Tag::updateOffsets(long delta, long offset)
         atom->offset += delta;
       }
       d->file->seek(atom->offset + 12);
-      ByteVector data = d->file->readBlock(atom->length - 12);
-      unsigned int count = data.toUInt();
+      ByteVector data = d->file->readBlock(static_cast<size_t>(atom->length - 12));
+      unsigned int count = data.toUInt32BE(0);
       d->file->seek(atom->offset + 16);
-      unsigned int pos = 4;
+      size_t pos = 4;
       while(count--) {
-        long long o = data.toLongLong(pos);
+        long long o = data.toInt64BE(pos);
         if(o > offset) {
           o += delta;
         }
-        d->file->writeBlock(ByteVector::fromLongLong(o));
+        d->file->writeBlock(ByteVector::fromUInt64BE(o));
         pos += 8;
       }
     }
@@ -596,15 +598,15 @@ MP4::Tag::updateOffsets(long delta, long offset)
         atom->offset += delta;
       }
       d->file->seek(atom->offset + 9);
-      ByteVector data = d->file->readBlock(atom->length - 9);
-      const unsigned int flags = data.toUInt(0, 3, true);
+      ByteVector data = d->file->readBlock(static_cast<size_t>(atom->length - 9));
+      const unsigned int flags = data.toUInt24BE(0);
       if(flags & 1) {
-        long long o = data.toLongLong(7U);
+        long long o = data.toInt64BE(7);
         if(o > offset) {
           o += delta;
         }
         d->file->seek(atom->offset + 16);
-        d->file->writeBlock(ByteVector::fromLongLong(o));
+        d->file->writeBlock(ByteVector::fromUInt64BE(o));
       }
     }
   }
@@ -624,11 +626,11 @@ MP4::Tag::saveNew(ByteVector data)
     data = renderAtom("udta", data);
   }
 
-  long offset = path.back()->offset + 8;
+  long long offset = path.back()->offset + 8;
   d->file->insert(data, offset, 0);
 
-  updateParents(path, data.size());
-  updateOffsets(data.size(), offset);
+  updateParents(path, static_cast<long>(data.size()));
+  updateOffsets(static_cast<long>(data.size()), offset);
 
   // Insert the newly created atoms into the tree to keep it up-to-date.
 
@@ -642,8 +644,8 @@ MP4::Tag::saveExisting(ByteVector data, const AtomList &path)
   AtomList::ConstIterator it = path.end();
 
   MP4::Atom *ilst = *(--it);
-  long offset = ilst->offset;
-  long length = ilst->length;
+  long long offset = ilst->offset;
+  long long length = ilst->length;
 
   MP4::Atom *meta = *(--it);
   AtomList::ConstIterator index = meta->children.find(ilst);
@@ -668,17 +670,17 @@ MP4::Tag::saveExisting(ByteVector data, const AtomList &path)
     }
   }
 
-  long delta = data.size() - length;
+  long delta = static_cast<long>(data.size() - length);
   if(delta > 0 || (delta < 0 && delta > -8)) {
     data.append(padIlst(data));
-    delta = data.size() - length;
+    delta = static_cast<long>(data.size() - length);
   }
   else if(delta < 0) {
-    data.append(padIlst(data, -delta - 8));
+    data.append(padIlst(data, 0 - delta - 8));
     delta = 0;
   }
 
-  d->file->insert(data, offset, length);
+  d->file->insert(data, offset, static_cast<size_t>(length));
 
   if(delta) {
     updateParents(path, delta, 1);
@@ -742,6 +744,42 @@ MP4::Tag::track() const
   return 0;
 }
 
+PictureMap
+MP4::Tag::pictures() const
+{
+  if(!d->items.contains("covr"))
+    return PictureMap();
+
+  CoverArtList list = d->items["covr"].toCoverArtList();
+  if(list.isEmpty())
+    return PictureMap();
+
+  PictureMap map;
+  for(CoverArtList::ConstIterator it = list.begin(); it != list.end(); ++it) {
+    CoverArt art = *it;
+    String mime = "image/";
+    switch(art.format()) {
+    case CoverArt::BMP:
+      mime.append("bmp");
+      break;
+    case CoverArt::JPEG:
+      mime.append("jpeg");
+      break;
+    case CoverArt::GIF:
+      mime.append("gif");
+      break;
+    case CoverArt::PNG:
+      mime.append("png");
+      break;
+    case CoverArt::Unknown:
+      break;
+    }
+    Picture picture(art.data(), Picture::Other, mime);
+    map.insert(picture);
+  }
+  return PictureMap(map);
+}
+
 void
 MP4::Tag::setTitle(const String &value)
 {
@@ -784,6 +822,39 @@ MP4::Tag::setTrack(unsigned int value)
   d->items["trkn"] = MP4::Item(value, 0);
 }
 
+void
+MP4::Tag::setPictures(const PictureMap &l)
+{
+  CoverArtList list;
+  for(PictureMap::ConstIterator pictureMapIt = l.begin();
+      pictureMapIt != l.end();
+      ++pictureMapIt) {
+    PictureList pictures = pictureMapIt->second;
+    for(PictureList::ConstIterator pictureListIt = pictures.begin();
+        pictureListIt != pictures.end();
+        ++pictureListIt) {
+      Picture picture = *pictureListIt;
+      CoverArt::Format format;
+      const char *mime = picture.mime().toCString();
+      if(std::strcmp("image/", mime) == 0)
+        format = CoverArt::Unknown;
+      else if(std::strcmp("image/bmp", mime) == 0)
+        format = CoverArt::BMP;
+      else if(std::strcmp("image/png", mime) == 0)
+        format = CoverArt::PNG;
+      else if(std::strcmp("image/gif", mime) == 0)
+        format = CoverArt::GIF;
+      else if(std::strcmp("image/jpeg", mime) == 0)
+        format = CoverArt::JPEG;
+      else
+        format = CoverArt::Unknown;
+      CoverArt art(format, picture.data());
+      list.append(art);
+    }
+  }
+  d->items["covr"] = list;
+}
+
 bool MP4::Tag::isEmpty() const
 {
   return d->items.isEmpty();
@@ -819,6 +890,16 @@ bool MP4::Tag::contains(const String &key) const
   return d->items.contains(key);
 }
 
+String
+MP4::Tag::toString() const
+{
+  StringList desc;
+  for(MP4::ItemListMap::Iterator i = d->items.begin(); i != d->items.end(); i++) {
+    desc.append(i->first + "=" + i->second.toString());
+  }
+  return desc.toString("\n");
+}
+
 namespace
 {
   const char *keyTranslation[][2] = {
@@ -844,6 +925,11 @@ namespace
     { "sonm", "TITLESORT" },
     { "soco", "COMPOSERSORT" },
     { "sosn", "SHOWSORT" },
+    { "shwm", "SHOWWORKMOVEMENT" },
+    { "\251wrk", "WORK" },
+    { "\251mvn", "MOVEMENTNAME" },
+    { "\251mvi", "MOVEMENTNUMBER" },
+    { "\251mvc", "MOVEMENTCOUNT" },
     { "----:com.apple.iTunes:MusicBrainz Track Id", "MUSICBRAINZ_TRACKID" },
     { "----:com.apple.iTunes:MusicBrainz Artist Id", "MUSICBRAINZ_ARTISTID" },
     { "----:com.apple.iTunes:MusicBrainz Album Id", "MUSICBRAINZ_ALBUMID" },
@@ -897,10 +983,10 @@ PropertyMap MP4::Tag::properties() const
         }
         props[key] = value;
       }
-      else if(key == "BPM") {
+      else if(key == "BPM" || key == "MOVEMENTNUMBER" || key == "MOVEMENTCOUNT") {
         props[key] = String::number(it->second.toInt());
       }
-      else if(key == "COMPILATION") {
+      else if(key == "COMPILATION" || key == "SHOWWORKMOVEMENT") {
         props[key] = String::number(it->second.toBool());
       }
       else {
@@ -952,11 +1038,11 @@ PropertyMap MP4::Tag::setProperties(const PropertyMap &props)
           d->items[name] = MP4::Item(first, second);
         }
       }
-      else if(it->first == "BPM" && !it->second.isEmpty()) {
+      else if((it->first == "BPM" || it->first == "MOVEMENTNUMBER" || it->first == "MOVEMENTCOUNT") && !it->second.isEmpty()) {
         int value = it->second.front().toInt();
         d->items[name] = MP4::Item(value);
       }
-      else if(it->first == "COMPILATION" && !it->second.isEmpty()) {
+      else if((it->first == "COMPILATION" || it->first == "SHOWWORKMOVEMENT") && !it->second.isEmpty()) {
         bool value = (it->second.front().toInt() != 0);
         d->items[name] = MP4::Item(value);
       }

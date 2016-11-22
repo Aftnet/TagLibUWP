@@ -81,12 +81,6 @@ MPEG::XingHeader::HeaderType MPEG::XingHeader::type() const
   return d->type;
 }
 
-int MPEG::XingHeader::xingHeaderOffset(TagLib::MPEG::Header::Version /*v*/,
-                                       TagLib::MPEG::Header::ChannelMode /*c*/)
-{
-  return 0;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // private members
 ////////////////////////////////////////////////////////////////////////////////
@@ -95,11 +89,11 @@ void MPEG::XingHeader::parse(const ByteVector &data)
 {
   // Look for a Xing header.
 
-  long offset = data.find("Xing");
-  if(offset < 0)
+  size_t offset = data.find("Xing");
+  if(offset == ByteVector::npos())
     offset = data.find("Info");
 
-  if(offset >= 0) {
+  if(offset != ByteVector::npos()) {
 
     // Xing header found.
 
@@ -113,8 +107,8 @@ void MPEG::XingHeader::parse(const ByteVector &data)
       return;
     }
 
-    d->frames = data.toUInt(offset + 8,  true);
-    d->size   = data.toUInt(offset + 12, true);
+    d->frames = data.toUInt32BE(offset + 8);
+    d->size   = data.toUInt32BE(offset + 12);
     d->type   = Xing;
   }
   else {
@@ -123,7 +117,7 @@ void MPEG::XingHeader::parse(const ByteVector &data)
 
     offset = data.find("VBRI");
 
-    if(offset >= 0) {
+    if(offset != ByteVector::npos()) {
 
       // VBRI header found.
 
@@ -132,8 +126,8 @@ void MPEG::XingHeader::parse(const ByteVector &data)
         return;
       }
 
-      d->frames = data.toUInt(offset + 14, true);
-      d->size   = data.toUInt(offset + 10, true);
+      d->frames = data.toUInt32BE(offset + 14);
+      d->size   = data.toUInt32BE(offset + 10);
       d->type   = VBRI;
     }
   }
