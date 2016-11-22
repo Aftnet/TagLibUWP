@@ -9,6 +9,7 @@ $srcDir = "Temp\\taglib-taglib2\\taglib"
 $destDir = "Source"
 Remove-Item $destDir -Recurse -Force
 New-Item -ItemType directory -Path $destDir
+Remove-Item ($srcDir+"\\CMakeLists.txt")
 Copy-Item ($srcDir+"\\*") -Destination $destDir -Recurse -Force
 
 Remove-Item $extractDir -Recurse -Force
