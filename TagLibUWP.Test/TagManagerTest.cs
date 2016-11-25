@@ -65,7 +65,7 @@ namespace TagLibUWP.Test
             Assert.NotNull(image);
             Assert.Equal("image/jpeg", image.MIMEType);
             Assert.NotNull(image.Bytes);
-            Assert.NotEmpty(image.Bytes);
+            Assert.Equal(151308, image.Bytes.Length);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
