@@ -63,7 +63,7 @@ namespace TagLibUWP.Test
 
             var image = tag.Image;
             Assert.NotNull(image);
-            Assert.Equal(image.MIMEType, "image/jpeg");
+            Assert.Equal("image/jpeg", image.MIMEType);
             Assert.NotNull(image.Bytes);
             Assert.NotEmpty(image.Bytes);
         }
