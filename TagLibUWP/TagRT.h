@@ -17,12 +17,15 @@ namespace TagLibUWP
 		property unsigned int Track;
 		property unsigned int Year;
 
-		property Picture^ Image;
+		property Picture^ Image { Picture^ get() { return image; } }
 
 		Tag();
 
 	internal:
 		Tag(const TagLib::Tag& tag);
 		void UpdateTag(TagLib::Tag& tag);
+
+	private:
+		Picture^ image;
 	};
 }

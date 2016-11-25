@@ -60,6 +60,12 @@ namespace TagLibUWP.Test
             Assert.Equal(nameof(tag.Title) + "あア亜", tag.Title);
             Assert.Equal(45U, tag.Track);
             Assert.Equal(2000U, tag.Year);
+
+            var image = tag.Image;
+            Assert.NotNull(image);
+            Assert.Equal(image.MIMEType, "image/jpeg");
+            Assert.NotNull(image.Bytes);
+            Assert.NotEmpty(image.Bytes);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]

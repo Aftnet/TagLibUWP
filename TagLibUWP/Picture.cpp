@@ -12,14 +12,18 @@ namespace TagLibUWP
 
 	Picture::Picture(const TagLib::PictureMap& pictureMap)
 	{
+		if (pictureMap.isEmpty())
+			return;
+
 		auto picture = GetPictureFromMapIfPresent(pictureMap, DefaultPictureType);
 		if (picture == nullptr)
 		{
 			picture = GetPictureFromMapIfPresent(pictureMap, TagLib::Picture::Type::BackCover);
 		}
-
 		if (picture == nullptr)
-			return;
+		{
+			picture = &(pictureMap.begin()->second.front());
+		}
 
 		auto pictureData = picture->data();
 		auto dataPtr = reinterpret_cast<uint8*>(pictureData.data());
@@ -29,10 +33,13 @@ namespace TagLibUWP
 
 	TagLib::PictureMap Picture::ToPictureMap()
 	{
+		TagLib::PictureMap output;
+		if (!Valid)
+			return output;
+
 		auto dataPtr = reinterpret_cast<char*>(Bytes->Data);
 		TagLib::Picture picture(TagLib::ByteVector(dataPtr, Bytes->Length), DefaultPictureType, TagLib::String(MIMEType->Data()));
 
-		TagLib::PictureMap output;
 		output.insert(picture);
 		return output;
 	}
