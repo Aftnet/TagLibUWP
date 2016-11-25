@@ -8,11 +8,6 @@ namespace TagLibUWP
 
 	Tag::Tag(const TagLib::Tag& tag)
 	{
-		InitializeFromTag(tag);
-	}
-
-	void Tag::InitializeFromTag(const TagLib::Tag& tag)
-	{
 		Album = ref new Platform::String(tag.album().toCWString());
 		Artist = ref new Platform::String(tag.artist().toCWString());
 		Comment = ref new Platform::String(tag.comment().toCWString());
@@ -20,6 +15,8 @@ namespace TagLibUWP
 		Title = ref new Platform::String(tag.title().toCWString());
 		Track = tag.track();
 		Year = tag.year();
+
+		Image = ref new Picture(tag.pictures());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
@@ -31,5 +28,7 @@ namespace TagLibUWP
 		tag.setTitle(TagLib::String(Title->Data()));
 		tag.setTrack(Track);
 		tag.setYear(Year);
+
+		tag.setPictures(Image->ToPictureMap());
 	}
 }

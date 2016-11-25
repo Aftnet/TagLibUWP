@@ -12,6 +12,7 @@
     <ClCompile Include="TagManager.cpp" />
     <ClCompile Include="TagRT.cpp" />
     <ClCompile Include="FileStreamRT.cpp" />
+    <ClCompile Include="Picture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioFileInfo.h" />
@@ -20,5 +21,6 @@
     <ClInclude Include="TagRT.h" />
     <ClInclude Include="FileStreamRT.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Picture.h" />
   </ItemGroup>
 </Project>
