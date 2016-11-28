@@ -28,7 +28,7 @@ namespace TagLibUWP
 		auto pictureData = picture->data();
 		auto dataPtr = reinterpret_cast<uint8*>(pictureData.data());
 		auto output = ref new Picture();
-		output->Bytes = ref new Platform::Array<uint8>(dataPtr, pictureData.size());
+		output->Data = ref new Platform::Array<uint8>(dataPtr, pictureData.size());
 		output->MIMEType = ref new Platform::String(picture->mime().toCWString());
 		return output;
 	}
@@ -39,8 +39,8 @@ namespace TagLibUWP
 		if (!Valid)
 			return output;
 
-		auto dataPtr = reinterpret_cast<char*>(Bytes->Data);
-		TagLib::Picture picture(TagLib::ByteVector(dataPtr, Bytes->Length), DefaultPictureType, TagLib::String(MIMEType->Data()));
+		auto dataPtr = reinterpret_cast<char*>(Data->Data);
+		TagLib::Picture picture(TagLib::ByteVector(dataPtr, Data->Length), DefaultPictureType, TagLib::String(MIMEType->Data()));
 
 		output.insert(picture);
 		return output;

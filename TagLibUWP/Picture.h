@@ -7,11 +7,11 @@ namespace TagLibUWP
 	public ref class Picture sealed
 	{
 	public:
-		property Platform::Array<uint8>^ Bytes;
+		property Platform::Array<uint8>^ Data;
 		property Platform::String^ MIMEType;
 		property bool Valid
 		{
-			bool get() { return !(Bytes == nullptr || Bytes->Length < 1 || MIMEType == nullptr || MIMEType->IsEmpty()); }
+			bool get() { return !(Data == nullptr || Data->Length < 1 || MIMEType == nullptr || MIMEType->IsEmpty()); }
 		};
 
 		Picture();

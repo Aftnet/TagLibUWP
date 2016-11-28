@@ -64,8 +64,8 @@ namespace TagLibUWP.Test
             var image = tag.Image;
             Assert.NotNull(image);
             Assert.Equal("image/jpeg", image.MIMEType);
-            Assert.NotNull(image.Bytes);
-            Assert.Equal(151308, image.Bytes.Length);
+            Assert.NotNull(image.Data);
+            Assert.Equal(151308, image.Data.Length);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
@@ -137,7 +137,7 @@ namespace TagLibUWP.Test
 
             var image = fileInfo.Tag.Image;
             image.MIMEType = testImageMIME;
-            image.Bytes = testImageBytes;
+            image.Data = testImageBytes;
 
             await Task.Run(() => TagManager.WriteFile(file, fileInfo.Tag));
 
@@ -145,10 +145,10 @@ namespace TagLibUWP.Test
             image = fileInfo.Tag.Image;
 
             Assert.Equal(testImageMIME, image.MIMEType);
-            Assert.Equal(testImageBytes.Length, image.Bytes.Length);
+            Assert.Equal(testImageBytes.Length, image.Data.Length);
             for (var i = 0; i < testImageBytes.Length; i++)
             {
-                Assert.Equal(testImageBytes[i], image.Bytes[i]);
+                Assert.Equal(testImageBytes[i], image.Data[i]);
             }
         }
 
