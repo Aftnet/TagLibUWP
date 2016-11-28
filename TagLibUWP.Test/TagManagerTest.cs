@@ -60,12 +60,6 @@ namespace TagLibUWP.Test
             Assert.Equal(nameof(tag.Title) + "あア亜", tag.Title);
             Assert.Equal(45U, tag.Track);
             Assert.Equal(2000U, tag.Year);
-
-            var image = tag.Image;
-            Assert.NotNull(image);
-            Assert.Equal("image/jpeg", image.MIMEType);
-            Assert.NotNull(image.Data);
-            Assert.Equal(151308, image.Data.Length);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
@@ -124,8 +118,22 @@ namespace TagLibUWP.Test
             await file.DeleteAsync();
         }
 
+        [Theory(DisplayName = "Image reading"), MemberData(nameof(SupportedAudioFileNames))]
+        public async Task ImageReadingWorks(string fileName)
+        {
+            var file = await GetTestMediaFileAsync(fileName);
+
+            var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+
+            var image = fileInfo.Tag.Image;
+            Assert.NotNull(image);
+            Assert.Equal("image/jpeg", image.MIMEType);
+            Assert.NotNull(image.Data);
+            Assert.Equal(151308, image.Data.Length);
+        }
+
         [Theory(DisplayName = "Image update"), MemberData(nameof(SupportedAudioFileNames))]
-        public async Task ImageUpdateTest(string fileName)
+        public async Task ImageUpdateWorks(string fileName)
         {
             var file = await GetTestMediaFileAsync(fileName);
             file = await CopyToTempFileAsync(file);
@@ -153,7 +161,7 @@ namespace TagLibUWP.Test
         }
 
         [Theory(DisplayName = "Image removal"), MemberData(nameof(SupportedAudioFileNames))]
-        public async Task ImageRemovalTest(string fileName)
+        public async Task ImageRemovalWorks(string fileName)
         {
             var file = await GetTestMediaFileAsync(fileName);
             file = await CopyToTempFileAsync(file);
