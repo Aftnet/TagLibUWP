@@ -86,6 +86,18 @@ namespace TagLibUWP.Test
             return TagWritingTest(fileName, d => d.Substring(2));
         }
 
+        [Theory(DisplayName = "Empty tag writing"), MemberData(nameof(SupportedAudioFileNames))]
+        public Task EmptyTagWritingWorks(string fileName)
+        {
+            return TagWritingTest(fileName, d => string.Empty);
+        }
+
+        [Theory(DisplayName = "Null tag writing"), MemberData(nameof(SupportedAudioFileNames))]
+        public Task NullTagWritingWorks(string fileName)
+        {
+            return TagWritingTest(fileName, d => null);
+        }
+
         public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
         {
             var file = await GetTestMediaFileAsync(fileName);
