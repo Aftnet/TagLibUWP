@@ -65,7 +65,7 @@ namespace TagLibUWP.Test
             Assert.NotNull(image);
             Assert.Equal("image/jpeg", image.MIMEType);
             Assert.NotNull(image.Bytes);
-            Assert.NotEmpty(image.Bytes);
+            Assert.Equal(151308, image.Bytes.Length);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
@@ -90,12 +90,6 @@ namespace TagLibUWP.Test
         public Task EmptyTagWritingWorks(string fileName)
         {
             return TagWritingTest(fileName, d => string.Empty);
-        }
-
-        [Theory(DisplayName = "Null tag writing"), MemberData(nameof(SupportedAudioFileNames))]
-        public Task NullTagWritingWorks(string fileName)
-        {
-            return TagWritingTest(fileName, d => null);
         }
 
         public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
