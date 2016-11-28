@@ -29,7 +29,7 @@ namespace TagLibUWP
 		tag.setTrack(Track);
 		tag.setYear(Year);
 
-		tag.setPictures(Image != nullptr ? Image->ToPictureMap() : TagLib::PictureMap());
+		tag.setPictures(PictureToPictureMap(Image));
 	}
 
 	TagLib::String Tag::PlatformToTagLibString(Platform::String^ input)
@@ -40,5 +40,15 @@ namespace TagLibUWP
 		}
 
 		return TagLib::String(input->Data());
+	}
+
+	TagLib::PictureMap Tag::PictureToPictureMap(Picture^ input)
+	{
+		if (input == nullptr || !input->Valid)
+		{
+			return TagLib::PictureMap();
+		}
+
+		return input->ToPictureMap();
 	}
 }

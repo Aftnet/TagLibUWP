@@ -27,5 +27,6 @@ namespace TagLibUWP
 
 	private:
 		TagLib::String PlatformToTagLibString(Platform::String^ input);
+		TagLib::PictureMap PictureToPictureMap(Picture^ input);
 	};
 }
