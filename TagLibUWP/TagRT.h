@@ -17,7 +17,7 @@ namespace TagLibUWP
 		property unsigned int Track;
 		property unsigned int Year;
 
-		property Picture^ Image { Picture^ get() { return image; } }
+		property Picture^ Image;
 
 		Tag();
 
@@ -26,6 +26,6 @@ namespace TagLibUWP
 		void UpdateTag(TagLib::Tag& tag);
 
 	private:
-		Picture^ image;
+		TagLib::String PlatformToTagLibString(Platform::String^ input);
 	};
 }

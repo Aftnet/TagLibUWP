@@ -16,19 +16,29 @@ namespace TagLibUWP
 		Track = tag.track();
 		Year = tag.year();
 
-		image = ref new Picture(tag.pictures());
+		Image = ref new Picture(tag.pictures());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
 	{
-		tag.setAlbum(TagLib::String(Album->Data()));
-		tag.setArtist(TagLib::String(Artist->Data()));
-		tag.setComment(TagLib::String(Comment->Data()));
-		tag.setGenre(TagLib::String(Genre->Data()));
-		tag.setTitle(TagLib::String(Title->Data()));
+		tag.setAlbum(PlatformToTagLibString(Album));
+		tag.setArtist(PlatformToTagLibString(Artist));
+		tag.setComment(PlatformToTagLibString(Comment));
+		tag.setGenre(PlatformToTagLibString(Genre));
+		tag.setTitle(PlatformToTagLibString(Title));
 		tag.setTrack(Track);
 		tag.setYear(Year);
 
-		tag.setPictures(Image->ToPictureMap());
+		tag.setPictures(Image != nullptr ? Image->ToPictureMap() : TagLib::PictureMap());
+	}
+
+	TagLib::String Tag::PlatformToTagLibString(Platform::String^ input)
+	{
+		if (input == nullptr || input->IsEmpty())
+		{
+			return TagLib::String();
+		}
+
+		return TagLib::String(input->Data());
 	}
 }
