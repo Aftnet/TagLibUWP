@@ -17,11 +17,11 @@ namespace TagLibUWP
 		Picture();
 
 	internal:
-		Picture(const TagLib::PictureMap& pictureMap);
+		static Picture^ FromPictureMape(const TagLib::PictureMap& pictureMap);
 		TagLib::PictureMap ToPictureMap();
 
 	private:
-		const TagLib::Picture::Type DefaultPictureType = TagLib::Picture::Type::FrontCover;
+		static const TagLib::Picture::Type DefaultPictureType = TagLib::Picture::Type::FrontCover;
 
 		static const TagLib::Picture* GetPictureFromMapIfPresent(const TagLib::PictureMap& pictureMap, TagLib::Picture::Type pictureType);
 	};

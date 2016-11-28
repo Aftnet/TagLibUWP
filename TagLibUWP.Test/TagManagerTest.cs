@@ -124,6 +124,49 @@ namespace TagLibUWP.Test
             await file.DeleteAsync();
         }
 
+        [Theory(DisplayName = "Image update"), MemberData(nameof(SupportedAudioFileNames))]
+        public async Task ImageUpdateTest(string fileName)
+        {
+            var file = await GetTestMediaFileAsync(fileName);
+            file = await CopyToTempFileAsync(file);
+
+            var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+
+            var testImageMIME = "image/png";
+            var testImageBytes = new byte[] { 1, 2, 3, 4, 5 };
+
+            var image = fileInfo.Tag.Image;
+            image.MIMEType = testImageMIME;
+            image.Bytes = testImageBytes;
+
+            await Task.Run(() => TagManager.WriteFile(file, fileInfo.Tag));
+
+            fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            image = fileInfo.Tag.Image;
+
+            Assert.Equal(testImageMIME, image.MIMEType);
+            Assert.Equal(testImageBytes.Length, image.Bytes.Length);
+            for (var i = 0; i < testImageBytes.Length; i++)
+            {
+                Assert.Equal(testImageBytes[i], image.Bytes[i]);
+            }
+        }
+
+        [Theory(DisplayName = "Image removal"), MemberData(nameof(SupportedAudioFileNames))]
+        public async Task ImageRemovalTest(string fileName)
+        {
+            var file = await GetTestMediaFileAsync(fileName);
+            file = await CopyToTempFileAsync(file);
+
+            var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+
+            fileInfo.Tag.Image = null;
+            await Task.Run(() => TagManager.WriteFile(file, fileInfo.Tag));
+
+            fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            Assert.Null(fileInfo.Tag.Image);
+        }
+
         private async Task<IStorageFile> GetTestMediaFileAsync(string fileName)
         {
             var mediaFolderPath = Path.Combine(Package.Current.InstalledLocation.Path, "TestMedia");

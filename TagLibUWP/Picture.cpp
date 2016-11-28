@@ -10,10 +10,10 @@ namespace TagLibUWP
 	{
 	}
 
-	Picture::Picture(const TagLib::PictureMap& pictureMap)
+	Picture^ Picture::FromPictureMape(const TagLib::PictureMap& pictureMap)
 	{
 		if (pictureMap.isEmpty())
-			return;
+			return nullptr;
 
 		auto picture = GetPictureFromMapIfPresent(pictureMap, DefaultPictureType);
 		if (picture == nullptr)
@@ -27,8 +27,10 @@ namespace TagLibUWP
 
 		auto pictureData = picture->data();
 		auto dataPtr = reinterpret_cast<uint8*>(pictureData.data());
-		Bytes = ref new Platform::Array<uint8>(dataPtr, pictureData.size());
-		MIMEType = ref new Platform::String(picture->mime().toCWString());
+		auto output = ref new Picture();
+		output->Bytes = ref new Platform::Array<uint8>(dataPtr, pictureData.size());
+		output->MIMEType = ref new Platform::String(picture->mime().toCWString());
+		return output;
 	}
 
 	TagLib::PictureMap Picture::ToPictureMap()

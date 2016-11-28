@@ -16,7 +16,7 @@ namespace TagLibUWP
 		Track = tag.track();
 		Year = tag.year();
 
-		Image = ref new Picture(tag.pictures());
+		Image = Picture::FromPictureMape(tag.pictures());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
