@@ -836,15 +836,15 @@ MP4::Tag::setPictures(const PictureMap &l)
       Picture picture = *pictureListIt;
       CoverArt::Format format;
 	  String mime = picture.mime();
-      if(String("image/") == mime)
-        format = CoverArt::Unknown;
-      else if(String("image/bmp") == mime)
-        format = CoverArt::BMP;
-      else if(String("image/png") == mime)
-        format = CoverArt::PNG;
-      else if(String("image/gif") == mime)
-        format = CoverArt::GIF;
-      else if(String("image/jpeg") == mime)
+	  if (String("image/") == mime)
+		  format = CoverArt::Unknown;
+	  else if (String("image/bmp") == mime)
+		  format = CoverArt::BMP;
+	  else if (String("image/png") == mime)
+		  format = CoverArt::PNG;
+	  else if (String("image/gif") == mime)
+		  format = CoverArt::GIF;
+	  else if (String("image/jpeg") == mime)
         format = CoverArt::JPEG;
       else
         format = CoverArt::Unknown;
@@ -1028,10 +1028,10 @@ PropertyMap MP4::Tag::setProperties(const PropertyMap &props)
     if(reverseKeyMap.contains(it->first)) {
       String name = reverseKeyMap[it->first];
       if((it->first == "TRACKNUMBER" || it->first == "DISCNUMBER") && !it->second.isEmpty()) {
-        int first = 0, second = 0;
         StringList parts = StringList::split(it->second.front(), "/");
         if(!parts.isEmpty()) {
-          first = parts[0].toInt();
+          int first = parts[0].toInt();
+          int second = 0;
           if(parts.size() > 1) {
             second = parts[1].toInt();
           }

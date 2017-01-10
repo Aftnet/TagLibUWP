@@ -60,7 +60,7 @@ namespace
 class FLAC::File::FilePrivate
 {
 public:
-  FilePrivate(const ID3v2::FrameFactory *frameFactory) :
+  explicit FilePrivate(const ID3v2::FrameFactory *frameFactory) :
     ID3v2FrameFactory(ID3v2::FrameFactory::instance()),
     ID3v2Location(-1),
     ID3v2OriginalSize(0),
@@ -153,8 +153,8 @@ bool FLAC::File::save()
   }
 
   // Create new vorbis comments
-
-  Tag::duplicate(&d->tag, xiphComment(true), false);
+  if(!hasXiphComment())
+    Tag::duplicate(&d->tag, xiphComment(true), false);
 
   d->xiphCommentData = xiphComment()->render(false);
 
