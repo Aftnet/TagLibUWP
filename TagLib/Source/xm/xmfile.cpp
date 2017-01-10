@@ -89,7 +89,7 @@ namespace
   class SkipReader : public Reader
   {
   public:
-    SkipReader(unsigned int size) : m_size(size)
+    explicit SkipReader(unsigned int size) : m_size(size)
     {
     }
 
@@ -113,7 +113,7 @@ namespace
   class ValueReader : public Reader
   {
   public:
-    ValueReader(T &value) : value(value)
+    explicit ValueReader(T &value) : value(value)
     {
     }
 
@@ -154,7 +154,7 @@ namespace
   class ByteReader : public ValueReader<unsigned char>
   {
   public:
-    ByteReader(unsigned char &byte) : ValueReader<unsigned char>(byte) {}
+    explicit ByteReader(unsigned char &byte) : ValueReader<unsigned char>(byte) {}
 
     unsigned int read(TagLib::File &file, unsigned int limit)
     {
@@ -360,7 +360,7 @@ namespace
 class XM::File::FilePrivate
 {
 public:
-  FilePrivate(AudioProperties::ReadStyle propertiesStyle)
+  explicit FilePrivate(AudioProperties::ReadStyle propertiesStyle)
     : tag(), properties(propertiesStyle)
   {
   }
@@ -590,9 +590,9 @@ void XM::File::read(bool)
     unsigned int count = 4 + instrument.read(*this, instrumentHeaderSize - 4U);
     READ_ASSERT(count == std::min(instrumentHeaderSize, instrument.size() + 4));
 
-    unsigned int sampleHeaderSize = 0;
     long offset = 0;
     if(sampleCount > 0) {
+      unsigned int sampleHeaderSize = 0;
       sumSampleCount += sampleCount;
       // wouldn't know which header size to assume otherwise:
       READ_ASSERT(instrumentHeaderSize >= count + 4 && readU32L(sampleHeaderSize));
