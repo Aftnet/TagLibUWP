@@ -99,9 +99,10 @@ namespace TagLibUWP.Test
             tag.Genre = TagTransformation(nameof(tag.Genre));
             tag.Title = TagTransformation(nameof(tag.Title) + "あア亜");
             tag.Comment = TagTransformation(nameof(tag.Comment));
-            var numBase = 22U;
-            tag.Track = numBase + 1;
-            tag.Year = numBase + 3;
+            var newTrackNumber = 23U;
+            tag.Track = newTrackNumber;
+            var newYear = 2096U;
+            tag.Year = newYear;
 
             await Task.Run(() => TagManager.WriteFile(file, tag));
 
@@ -112,8 +113,8 @@ namespace TagLibUWP.Test
             Assert.Equal(TagTransformation(nameof(tag.Genre)), tag.Genre);
             Assert.Equal(TagTransformation(nameof(tag.Title) + "あア亜"), tag.Title);
             Assert.Equal(TagTransformation(nameof(tag.Comment)), tag.Comment);
-            Assert.Equal(numBase + 1, tag.Track);
-            Assert.Equal(numBase + 3, tag.Year);
+            Assert.Equal(newTrackNumber, tag.Track);
+            Assert.Equal(newYear, tag.Year);
 
             await file.DeleteAsync();
         }

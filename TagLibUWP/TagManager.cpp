@@ -2,6 +2,7 @@
 
 #include "FileStreamRT.h"
 #include "fileref.h"
+#include "mpeg\mpegfile.h"
 
 using namespace Windows::Storage;
 
@@ -31,6 +32,16 @@ namespace TagLibUWP
 		ValidateFile(tagLibfile);
 
 		tag->UpdateTag(*tagLibfile.tag());
+
+		//Ensure mp3 files are saved with id3v2 tags only
+		auto wrappedFile = tagLibfile.file();
+		auto fileAsMp3 = dynamic_cast<TagLib::MPEG::File*>(wrappedFile);
+		if (fileAsMp3 != nullptr)
+		{
+			fileAsMp3->save(TagLib::MPEG::File::ID3v2, true, 3, false);
+			return;
+		}
+
 		tagLibfile.save();
 	}
 
