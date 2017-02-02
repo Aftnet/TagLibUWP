@@ -18,6 +18,11 @@ namespace TagLibUWP.Test
         private static string[] SupportedAudioExtensions = new string[] { "asf", "flac", "m4a", "m4v", "mp3", "mp4", "ogg", "wma", "wav", "wv" };
         public static IEnumerable<object[]> SupportedAudioFileNames { get { return SupportedAudioExtensions.Select(d => new object[] { "AudioTest." + d }); } }
 
+        private const string JpegMimeType = "image/jpeg";
+        private const string PNGMimeType = "image/png";
+
+        private static string[] TestPictureNames = new string[] { "Cover01.jpg", "Cover02.jpg" };
+
         [Fact(DisplayName = "Getting supported extensions")]
         public void GetSupportedExtensionsWorks()
         {
@@ -128,7 +133,7 @@ namespace TagLibUWP.Test
 
             var image = fileInfo.Tag.Image;
             Assert.NotNull(image);
-            Assert.Equal("image/jpeg", image.MIMEType);
+            Assert.Equal(JpegMimeType, image.MIMEType);
             Assert.NotNull(image.Data);
             Assert.Equal(151308, image.Data.Length);
         }
@@ -141,7 +146,7 @@ namespace TagLibUWP.Test
 
             var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
 
-            var testImageMIME = "image/png";
+            var testImageMIME = PNGMimeType;
             var testImageBytes = new byte[] { 1, 2, 3, 4, 5 };
 
             var image = fileInfo.Tag.Image;
@@ -176,6 +181,44 @@ namespace TagLibUWP.Test
             Assert.Null(fileInfo.Tag.Image);
         }
 
+        [Fact(DisplayName = "Cover update performance")]
+        public async Task ImageReplacementPerformanceTest()
+        {
+            var file = await GetTestMediaFileAsync("AudioTest.mp3");
+            file = await CopyToTempFileAsync(file);
+
+            var testPictureBytes = new byte[TestPictureNames.Length][];
+            for (var i = 0; i < testPictureBytes.Length; i++)
+            {
+                testPictureBytes[i] = await LoadFileToMemoryAsync(TestPictureNames[i]);
+            }
+
+            var totalTime = await Task.Run(() =>
+            {
+                var output = TimeSpan.Zero;
+
+                var numIterations = 300;
+                for (var i = 0; i < numIterations; i++)
+                {
+                    var index = i % testPictureBytes.Length;
+                    var fileInfo = TagManager.ReadFile(file);
+                    fileInfo.Tag.Image = new Picture
+                    {
+                        Data = testPictureBytes[index],
+                        MIMEType = JpegMimeType
+                    };
+                    var startTime = DateTimeOffset.UtcNow;
+                    TagManager.WriteFile(fileInfo);
+                    var timeDelta = DateTimeOffset.UtcNow - startTime;
+                    output += timeDelta;
+                }
+
+                return output;
+            });
+
+            Assert.True(totalTime.TotalSeconds < 10);
+        }
+
         private async Task<IStorageFile> GetTestMediaFileAsync(string fileName)
         {
             var mediaFolderPath = Path.Combine(Package.Current.InstalledLocation.Path, "TestMedia");
@@ -188,6 +231,15 @@ namespace TagLibUWP.Test
         {
             var folder = ApplicationData.Current.TemporaryFolder;
             var output = await input.CopyAsync(folder, "Temp-" + input.Name, NameCollisionOption.ReplaceExisting);
+            return output;
+        }
+
+        private async Task<byte[]> LoadFileToMemoryAsync(string fileName)
+        {
+            var file = await GetTestMediaFileAsync(fileName);
+            var stream = (await file.OpenReadAsync()).AsStreamForRead();
+            var output = new byte[stream.Length];
+            await stream.ReadAsync(output, 0, output.Length);
             return output;
         }
     }

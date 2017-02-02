@@ -835,16 +835,16 @@ MP4::Tag::setPictures(const PictureMap &l)
         ++pictureListIt) {
       Picture picture = *pictureListIt;
       CoverArt::Format format;
-	  String mime = picture.mime();
-	  if (String("image/") == mime)
-		  format = CoverArt::Unknown;
-	  else if (String("image/bmp") == mime)
-		  format = CoverArt::BMP;
-	  else if (String("image/png") == mime)
-		  format = CoverArt::PNG;
-	  else if (String("image/gif") == mime)
-		  format = CoverArt::GIF;
-	  else if (String("image/jpeg") == mime)
+      String mime = picture.mime();
+      if(String("image/") == mime)
+        format = CoverArt::Unknown;
+      else if(String("image/bmp") == mime)
+        format = CoverArt::BMP;
+      else if(String("image/png") == mime)
+        format = CoverArt::PNG;
+      else if(String("image/gif") == mime)
+        format = CoverArt::GIF;
+      else if(String("image/jpeg") == mime)
         format = CoverArt::JPEG;
       else
         format = CoverArt::Unknown;

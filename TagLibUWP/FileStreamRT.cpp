@@ -106,7 +106,11 @@ namespace TagLib
 		// the *differnce* in the tag sizes.  We want to avoid overwriting parts
 		// that aren't yet in memory, so this is necessary.
 
-		auto bufferLength = max(data.size() - replace + 1, DefaultBufferSize);
+		auto bufferLength = DefaultBufferSize;
+		while (bufferLength < data.size() - replace)
+		{
+			bufferLength += DefaultBufferSize;
+		}
 
 		// Set where to start the reading and writing.
 
