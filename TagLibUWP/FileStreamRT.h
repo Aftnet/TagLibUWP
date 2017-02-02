@@ -99,7 +99,7 @@ namespace TagLib
 		virtual void truncate(long long length);
 
 	private:
-		static const size_t DefaultBufferSize = 16 * 1024;
+		static const size_t DefaultBufferSize = 128 * 1024;
 
 		Platform::String^ const Name;
 		IRandomAccessStream^ const Stream;
