@@ -1,6 +1,6 @@
 # TagLibUWP
 
-[![Build status](https://ci.appveyor.com/api/projects/status/4gd0dmwjwuvon82w?svg=true)](https://ci.appveyor.com/project/albertofustinoni/taglibuwp)
+[![Build status](https://ci.appveyor.com/api/projects/status/4gd0dmwjwuvon82w?svg=true)](https://ci.appveyor.com/project/Aftnet/taglibuwp)
 [![NuGet version](https://badge.fury.io/nu/TagLibUWP.svg)](https://badge.fury.io/nu/TagLibUWP)
 
 Port of [TagLib](http://taglib.org/) to UWP WinRT component. Uses WinRT's new file IO API to work with the sandboxed app model.
