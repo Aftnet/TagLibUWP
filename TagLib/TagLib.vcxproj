@@ -317,7 +317,6 @@
     <ClInclude Include="Source\taglib\toolkit\tstringlist.h" />
     <ClInclude Include="Source\taglib\toolkit\tutils.h" />
     <ClInclude Include="Source\taglib\toolkit\tzlib.h" />
-    <ClInclude Include="Source\taglib\toolkit\unicode.h" />
     <ClInclude Include="Source\taglib\trueaudio\trueaudiofile.h" />
     <ClInclude Include="Source\taglib\trueaudio\trueaudioproperties.h" />
     <ClInclude Include="Source\taglib\wavpack\wavpackfile.h" />
@@ -433,7 +432,6 @@
     <ClCompile Include="Source\taglib\toolkit\tstringhandler.cpp" />
     <ClCompile Include="Source\taglib\toolkit\tstringlist.cpp" />
     <ClCompile Include="Source\taglib\toolkit\tzlib.cpp" />
-    <ClCompile Include="Source\taglib\toolkit\unicode.cpp" />
     <ClCompile Include="Source\taglib\trueaudio\trueaudiofile.cpp" />
     <ClCompile Include="Source\taglib\trueaudio\trueaudioproperties.cpp" />
     <ClCompile Include="Source\taglib\wavpack\wavpackfile.cpp" />
