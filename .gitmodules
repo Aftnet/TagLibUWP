@@ -1,0 +1,4 @@
+[submodule "TagLib/Source"]
+	path = TagLib/Source
+	url = https://github.com/taglib/taglib.git
+	branch = taglib2
