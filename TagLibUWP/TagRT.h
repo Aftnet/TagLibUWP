@@ -3,6 +3,9 @@
 #include "Picture.h"
 
 #include "tag.h"
+#include "toolkit\tpropertymap.h"
+
+#include <collection.h>
 
 namespace TagLibUWP
 {
@@ -19,6 +22,8 @@ namespace TagLibUWP
 
 		property Picture^ Image;
 
+		property Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ Properties;
+
 		Tag();
 
 	internal:
@@ -28,5 +33,6 @@ namespace TagLibUWP
 	private:
 		TagLib::String PlatformToTagLibString(Platform::String^ input);
 		TagLib::PictureMap PictureToPictureMap(Picture^ input);
+		Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ TagLibPropertyMapToPlatformMap(const TagLib::SimplePropertyMap& map);
 	};
 }

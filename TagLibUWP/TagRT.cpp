@@ -1,5 +1,4 @@
 #include "TagRT.h"
-#include "toolkit\tpropertymap.h"
 
 namespace TagLibUWP
 {
@@ -18,6 +17,8 @@ namespace TagLibUWP
 		Year = tag.year();
 
 		Image = Picture::FromPictureMape(tag.pictures());
+
+		Properties = TagLibPropertyMapToPlatformMap(tag.properties());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
@@ -53,5 +54,18 @@ namespace TagLibUWP
 		}
 
 		return input->ToPictureMap();
+	}
+
+	Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ Tag::TagLibPropertyMapToPlatformMap(const TagLib::SimplePropertyMap& map)
+	{
+		auto convertedMap = ref new Platform::Collections::Map<Platform::String^, Platform::String^>;
+		for (auto it = map.begin(); it != map.end(); it++)
+		{
+			auto key = ref new Platform::String(it->first.toCWString());
+			auto value = ref new Platform::String(it->second.front().toCWString());
+			convertedMap->Insert(key, value);
+		}
+
+		return convertedMap;
 	}
 }
