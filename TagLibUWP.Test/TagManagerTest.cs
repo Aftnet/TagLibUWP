@@ -58,6 +58,8 @@ namespace TagLibUWP.Test
 
             var tag = fileInfo.Tag;
             Assert.NotNull(tag);
+            Assert.NotNull(tag.Properties);
+
             Assert.Equal(nameof(tag.Album), tag.Album);
             Assert.Equal(nameof(tag.Artist), tag.Artist);
             Assert.Equal(nameof(tag.Comment), tag.Comment);

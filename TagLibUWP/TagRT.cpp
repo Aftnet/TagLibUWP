@@ -23,8 +23,6 @@ namespace TagLibUWP
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
 	{
-		tag.properties().clear();
-
 		tag.setAlbum(PlatformToTagLibString(Album));
 		tag.setArtist(PlatformToTagLibString(Artist));
 		tag.setComment(PlatformToTagLibString(Comment));
@@ -62,8 +60,12 @@ namespace TagLibUWP
 		for (auto it = map.begin(); it != map.end(); it++)
 		{
 			auto key = ref new Platform::String(it->first.toCWString());
-			auto value = ref new Platform::String(it->second.front().toCWString());
-			convertedMap->Insert(key, value);
+			auto valList = it->second;
+			if (!valList.isEmpty())
+			{
+				auto value = ref new Platform::String(it->second.front().toCWString());
+				convertedMap->Insert(key, value);
+			}
 		}
 
 		return convertedMap;
