@@ -57,16 +57,27 @@ namespace TagLibUWP.Test
             Assert.NotNull(fileInfo.Properties);
 
             var tag = fileInfo.Tag;
+            var tagProperties = tag.Properties;
             Assert.NotNull(tag);
             Assert.NotNull(tag.Properties);
 
             Assert.Equal(nameof(tag.Album), tag.Album);
+            Assert.Equal(nameof(tag.Album), tagProperties["ALBUM"]);
             Assert.Equal(nameof(tag.Artist), tag.Artist);
+            Assert.Equal(nameof(tag.Artist), tagProperties["ARTIST"]);
             Assert.Equal(nameof(tag.Comment), tag.Comment);
+            Assert.Equal(nameof(tag.Comment), tagProperties["COMMENT"]);
             Assert.Equal(nameof(tag.Genre), tag.Genre);
-            Assert.Equal(nameof(tag.Title) + "あア亜", tag.Title);
+            Assert.Equal(nameof(tag.Genre), tagProperties["GENRE"]);
+            var titleRef = nameof(tag.Title) + "あア亜";
+            Assert.Equal(titleRef, tag.Title);
+            Assert.Equal(titleRef, tagProperties["TITLE"]);
             Assert.Equal(45U, tag.Track);
+            Assert.Equal("45", tagProperties["TRACKNUMBER"]);
             Assert.Equal(2000U, tag.Year);
+            Assert.Equal("2000", tagProperties["DATE"]);
+
+            Assert.Equal("Comment", tagProperties["COMMENT"]);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
