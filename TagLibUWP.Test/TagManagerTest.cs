@@ -77,7 +77,13 @@ namespace TagLibUWP.Test
             Assert.Equal(2000U, tag.Year);
             Assert.Equal("2000", tagProperties["DATE"]);
 
+            Assert.Equal("AlbumArtist", tagProperties["ALBUMARTIST"]);
             Assert.Equal("Comment", tagProperties["COMMENT"]);
+            Assert.Equal("Composer", tagProperties["COMPOSER"]);
+            Assert.Equal("67", tagProperties["DISCNUMBER"]);
+            Assert.Equal("Copyright", tagProperties["COPYRIGHT"]);
+
+            //Assert.Equal("Custom", tagProperties["CUSTOM"]);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
