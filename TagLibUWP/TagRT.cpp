@@ -8,21 +8,23 @@ namespace TagLibUWP
 
 	Tag::Tag(const TagLib::Tag& tag)
 	{
-		Album = ref new Platform::String(tag.album().toCWString());
-		Artist = ref new Platform::String(tag.artist().toCWString());
-		Comment = ref new Platform::String(tag.comment().toCWString());
-		Genre = ref new Platform::String(tag.genre().toCWString());
-		Title = ref new Platform::String(tag.title().toCWString());
+		Properties = TagLibToPlatformMap(tag.properties());
+
+		Album = TagLibToPlatformString(tag.album());
+		Artist = TagLibToPlatformString(tag.artist());
+		Comment = TagLibToPlatformString(tag.comment());
+		Genre = TagLibToPlatformString(tag.genre());
+		Title = TagLibToPlatformString(tag.title());
 		Track = tag.track();
 		Year = tag.year();
 
 		Image = Picture::FromPictureMape(tag.pictures());
-
-		Properties = TagLibPropertyMapToPlatformMap(tag.properties());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
 	{
+		tag.setProperties(PlatformToTagLibMap(Properties));
+
 		tag.setAlbum(PlatformToTagLibString(Album));
 		tag.setArtist(PlatformToTagLibString(Artist));
 		tag.setComment(PlatformToTagLibString(Comment));
@@ -44,6 +46,12 @@ namespace TagLibUWP
 		return TagLib::String(input->Data());
 	}
 
+	Platform::String^ Tag::TagLibToPlatformString(const TagLib::String& input)
+	{
+		auto output = ref new Platform::String(input.toCWString());
+		return output;
+	}
+
 	TagLib::PictureMap Tag::PictureToPictureMap(Picture^ input)
 	{
 		if (input == nullptr || !input->Valid)
@@ -54,16 +62,29 @@ namespace TagLibUWP
 		return input->ToPictureMap();
 	}
 
-	Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ Tag::TagLibPropertyMapToPlatformMap(const TagLib::SimplePropertyMap& map)
+	TagLib::SimplePropertyMap Tag::PlatformToTagLibMap(Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ map)
+	{
+		TagLib::SimplePropertyMap convertedMap;
+		for each (auto item in map)
+		{
+			auto key = PlatformToTagLibString(item->Key);
+			auto value = PlatformToTagLibString(item->Value);
+			convertedMap.insert(key, TagLib::StringList(value));
+		}
+
+		return convertedMap;
+	}
+
+	Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ Tag::TagLibToPlatformMap(const TagLib::SimplePropertyMap& map)
 	{
 		auto convertedMap = ref new Platform::Collections::Map<Platform::String^, Platform::String^>;
-		for (auto it = map.begin(); it != map.end(); it++)
+		for (auto pair : map)
 		{
-			auto key = ref new Platform::String(it->first.toCWString());
-			auto valList = it->second;
+			auto key = TagLibToPlatformString(pair.first);
+			auto valList = pair.second;
 			if (!valList.isEmpty())
 			{
-				auto value = ref new Platform::String(it->second.front().toCWString());
+				auto value = TagLibToPlatformString(pair.second.front());
 				convertedMap->Insert(key, value);
 			}
 		}

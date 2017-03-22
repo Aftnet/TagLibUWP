@@ -32,7 +32,11 @@ namespace TagLibUWP
 
 	private:
 		TagLib::String PlatformToTagLibString(Platform::String^ input);
+		Platform::String^ TagLibToPlatformString(const TagLib::String& input);
+
 		TagLib::PictureMap PictureToPictureMap(Picture^ input);
-		Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ TagLibPropertyMapToPlatformMap(const TagLib::SimplePropertyMap& map);
+
+		TagLib::SimplePropertyMap PlatformToTagLibMap(Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ map);
+		Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ TagLibToPlatformMap(const TagLib::SimplePropertyMap& map);
 	};
 }
