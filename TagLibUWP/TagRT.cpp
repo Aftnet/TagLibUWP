@@ -2,70 +2,64 @@
 
 namespace TagLibUWP
 {
+	Platform::String^ Tag::albumKey(L"ALBUM");
+	Platform::String^ Tag::albumArtistKey(L"ALBUMARTIST");
+	Platform::String^ Tag::artistKey(L"ARTIST");
+	Platform::String^ Tag::commentKey(L"COMMENT");
+	Platform::String^ Tag::composerKey(L"COMPOSER");
+	Platform::String^ Tag::copyrightKey(L"COPYRIGHT");
+	Platform::String^ Tag::discNumberKey(L"DISCNUMBER");
+	Platform::String^ Tag::genreKey(L"GENRE");
+	Platform::String^ Tag::titleKey(L"TITLE");
+	Platform::String^ Tag::trackKey(L"TARCKNUMBER");
+	Platform::String^ Tag::yearKey(L"DATE");
+
 	Tag::Tag()
 	{
 	}
 
 	Tag::Tag(const TagLib::Tag& tag)
 	{
-		Properties = TagLibToPlatformMap(tag.properties());
-
-		Album = TagLibToPlatformString(tag.album());
-		Artist = TagLibToPlatformString(tag.artist());
-		Comment = TagLibToPlatformString(tag.comment());
-		Genre = TagLibToPlatformString(tag.genre());
-		Title = TagLibToPlatformString(tag.title());
-		Track = tag.track();
-		Year = tag.year();
-
+		properties = TagLibToPlatformMap(tag.properties());
 		Image = Picture::FromPictureMape(tag.pictures());
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
 	{
-		tag.setProperties(PlatformToTagLibMap(Properties));
-
-		tag.setAlbum(PlatformToTagLibString(Album));
-		tag.setArtist(PlatformToTagLibString(Artist));
-		tag.setComment(PlatformToTagLibString(Comment));
-		tag.setGenre(PlatformToTagLibString(Genre));
-		tag.setTitle(PlatformToTagLibString(Title));
-		tag.setTrack(Track);
-		tag.setYear(Year);
-
+		tag.setProperties(PlatformToTagLibMap(properties));
 		tag.setPictures(PictureToPictureMap(Image));
 	}
 
-	TagLib::String Tag::PlatformToTagLibString(Platform::String^ input)
+	TagLib::String Tag::PlatformToTagLibString(Platform::String^ value)
 	{
-		if (input == nullptr || input->IsEmpty())
+		if (value == nullptr || value->IsEmpty())
 		{
 			return TagLib::String();
 		}
 
-		return TagLib::String(input->Data());
+		return TagLib::String(value->Data());
 	}
 
-	Platform::String^ Tag::TagLibToPlatformString(const TagLib::String& input)
+	Platform::String^ Tag::TagLibToPlatformString(const TagLib::String& value)
 	{
-		auto output = ref new Platform::String(input.toCWString());
+		auto output = ref new Platform::String(value.toCWString());
 		return output;
 	}
 
-	TagLib::PictureMap Tag::PictureToPictureMap(Picture^ input)
+	TagLib::PictureMap Tag::PictureToPictureMap(Picture^ value)
 	{
-		if (input == nullptr || !input->Valid)
+		if (value == nullptr || !value->Valid)
 		{
 			return TagLib::PictureMap();
 		}
 
-		return input->ToPictureMap();
+		return value->ToPictureMap();
 	}
 
-	TagLib::SimplePropertyMap Tag::PlatformToTagLibMap(Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ map)
+	TagLib::SimplePropertyMap Tag::PlatformToTagLibMap(PlatformPropertyMap^ value)
 	{
 		TagLib::SimplePropertyMap convertedMap;
-		for each (auto item in map)
+		for each (auto item in value)
 		{
 			auto key = PlatformToTagLibString(item->Key);
 			auto value = PlatformToTagLibString(item->Value);
@@ -75,10 +69,10 @@ namespace TagLibUWP
 		return convertedMap;
 	}
 
-	Windows::Foundation::Collections::IMap<Platform::String^, Platform::String^>^ Tag::TagLibToPlatformMap(const TagLib::SimplePropertyMap& map)
+	PlatformPropertyMap^ Tag::TagLibToPlatformMap(const TagLib::SimplePropertyMap& value)
 	{
 		auto convertedMap = ref new Platform::Collections::Map<Platform::String^, Platform::String^>;
-		for (auto pair : map)
+		for (auto pair : value)
 		{
 			auto key = TagLibToPlatformString(pair.first);
 			auto valList = pair.second;
@@ -90,5 +84,30 @@ namespace TagLibUWP
 		}
 
 		return convertedMap;
+	}
+
+	Platform::String^ Tag::UIntToPlatformString(unsigned int value)
+	{
+		auto output = ref new Platform::String(std::to_wstring(value).c_str());
+		return output;
+	}
+
+	unsigned int Tag::PlatformStringToUInt(Platform::String^ value)
+	{
+		unsigned int output = 0;
+		try
+		{
+			output = std::stoi(value->Data());
+		}
+		catch(std::invalid_argument)
+		{
+
+		}
+		catch (std::out_of_range)
+		{
+
+		}
+
+		return output;
 	}
 }

@@ -55,7 +55,7 @@ namespace TagLibUWP.Test
             var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             Assert.Same(file, fileInfo.File);
             Assert.NotNull(fileInfo.Properties);
-
+            
             var tag = fileInfo.Tag;
             var tagProperties = tag.Properties;
             Assert.NotNull(tag);
@@ -78,7 +78,6 @@ namespace TagLibUWP.Test
             Assert.Equal("2000", tagProperties["DATE"]);
 
             Assert.Equal("AlbumArtist", tagProperties["ALBUMARTIST"]);
-            Assert.Equal("Comment", tagProperties["COMMENT"]);
             Assert.Equal("Composer", tagProperties["COMPOSER"]);
             Assert.Equal("67", tagProperties["DISCNUMBER"]);
             Assert.Equal("Copyright", tagProperties["COPYRIGHT"]);
