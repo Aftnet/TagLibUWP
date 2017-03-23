@@ -57,12 +57,12 @@ namespace TagLibUWP
 			void set(Platform::String^ value) { properties->Insert(copyrightKey, value); }
 		}
 
-		/*static property Platform::String^ DiscNumberKey { Platform::String^ get() { return discNumberKey; }}
-		property Platform::String^ DiscNumber
+		static property Platform::String^ DiscNumberKey { Platform::String^ get() { return discNumberKey; }}
+		property unsigned int DiscNumber
 		{
-			Platform::String^ get() { return properties->Lookup(discNumberKey); }
-			void set(Platform::String^ value) { properties->Insert(discNumberKey, value); }
-		}*/
+			unsigned int get() { return PlatformStringToUInt(properties->Lookup(discNumberKey)); }
+			void set(unsigned int value) { properties->Insert(discNumberKey, UIntToPlatformString(value)); }
+		}
 
 		static property Platform::String^ GenreKey { Platform::String^ get() { return genreKey; }}
 		property Platform::String^ Genre
@@ -78,8 +78,19 @@ namespace TagLibUWP
 			void set(Platform::String^ value) { properties->Insert(titleKey, value); }
 		}
 
-		property unsigned int Track;
-		property unsigned int Year;
+		static property Platform::String^ TrackKey { Platform::String^ get() { return trackKey; }}
+		property unsigned int Track
+		{
+			unsigned int get() { return PlatformStringToUInt(properties->Lookup(trackKey)); }
+			void set(unsigned int value) { properties->Insert(trackKey, UIntToPlatformString(value)); }
+		}
+
+		static property Platform::String^ YearKey { Platform::String^ get() { return yearKey; }}
+		property unsigned int Year
+		{
+			unsigned int get() { return PlatformStringToUInt(properties->Lookup(yearKey)); }
+			void set(unsigned int value) { properties->Insert(yearKey, UIntToPlatformString(value)); }
+		}
 
 		property Picture^ Image;
 
