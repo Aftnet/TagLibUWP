@@ -220,6 +220,7 @@
   <ItemGroup>
     <ClInclude Include="AudioFileInfo.h" />
     <ClInclude Include="AudioPropertiesRT.h" />
+    <ClInclude Include="Converter.h" />
     <ClInclude Include="FileStreamRT.h" />
     <ClInclude Include="Picture.h" />
     <ClInclude Include="TagManager.h" />
@@ -229,6 +230,7 @@
   <ItemGroup>
     <ClCompile Include="AudioFileInfo.cpp" />
     <ClCompile Include="AudioPropertiesRT.cpp" />
+    <ClCompile Include="Converter.cpp" />
     <ClCompile Include="FileStreamRT.cpp" />
     <ClCompile Include="Picture.cpp" />
     <ClCompile Include="TagManager.cpp" />

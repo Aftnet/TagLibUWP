@@ -13,6 +13,7 @@
     <ClCompile Include="TagRT.cpp" />
     <ClCompile Include="FileStreamRT.cpp" />
     <ClCompile Include="Picture.cpp" />
+    <ClCompile Include="Converter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioFileInfo.h" />
@@ -22,5 +23,6 @@
     <ClInclude Include="FileStreamRT.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Picture.h" />
+    <ClInclude Include="Converter.h" />
   </ItemGroup>
 </Project>
