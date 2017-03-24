@@ -63,24 +63,27 @@ namespace TagLibUWP.Test
 
             Assert.Equal(nameof(tag.Album), tag.Album);
             Assert.Equal(nameof(tag.Album), tagProperties["ALBUM"]);
+            Assert.Equal(nameof(tag.AlbumArtist), tag.AlbumArtist);
+            Assert.Equal(nameof(tag.AlbumArtist), tagProperties["ALBUMARTIST"]);
             Assert.Equal(nameof(tag.Artist), tag.Artist);
             Assert.Equal(nameof(tag.Artist), tagProperties["ARTIST"]);
             Assert.Equal(nameof(tag.Comment), tag.Comment);
             Assert.Equal(nameof(tag.Comment), tagProperties["COMMENT"]);
+            Assert.Equal(nameof(tag.Composer), tag.Composer);
+            Assert.Equal(nameof(tag.Composer), tagProperties["COMPOSER"]);
+            Assert.Equal(nameof(tag.Copyright), tag.Copyright);
+            Assert.Equal(nameof(tag.Copyright), tagProperties["COPYRIGHT"]);
+            Assert.Equal(67U, tag.DiscNumber);
+            Assert.Equal("67", tagProperties["DISCNUMBER"]);
             Assert.Equal(nameof(tag.Genre), tag.Genre);
             Assert.Equal(nameof(tag.Genre), tagProperties["GENRE"]);
             var titleRef = nameof(tag.Title) + "あア亜";
             Assert.Equal(titleRef, tag.Title);
             Assert.Equal(titleRef, tagProperties["TITLE"]);
-            Assert.Equal(45U, tag.Track);
+            Assert.Equal(45U, tag.TrackNumber);
             Assert.Equal("45", tagProperties["TRACKNUMBER"]);
             Assert.Equal(2000U, tag.Year);
             Assert.Equal("2000", tagProperties["DATE"]);
-
-            Assert.Equal("AlbumArtist", tagProperties["ALBUMARTIST"]);
-            Assert.Equal("Composer", tagProperties["COMPOSER"]);
-            Assert.Equal("67", tagProperties["DISCNUMBER"]);
-            Assert.Equal("Copyright", tagProperties["COPYRIGHT"]);
 
             //Assert.Equal("Custom", tagProperties["CUSTOM"]);
         }
@@ -123,7 +126,7 @@ namespace TagLibUWP.Test
             tag.Title = TagTransformation(nameof(tag.Title) + "あア亜");
             tag.Comment = TagTransformation(nameof(tag.Comment));
             var newTrackNumber = 23U;
-            tag.Track = newTrackNumber;
+            tag.TrackNumber = newTrackNumber;
             var newYear = 2096U;
             tag.Year = newYear;
 
@@ -136,7 +139,7 @@ namespace TagLibUWP.Test
             Assert.Equal(TagTransformation(nameof(tag.Genre)), tag.Genre);
             Assert.Equal(TagTransformation(nameof(tag.Title) + "あア亜"), tag.Title);
             Assert.Equal(TagTransformation(nameof(tag.Comment)), tag.Comment);
-            Assert.Equal(newTrackNumber, tag.Track);
+            Assert.Equal(newTrackNumber, tag.TrackNumber);
             Assert.Equal(newYear, tag.Year);
 
             await file.DeleteAsync();

@@ -11,7 +11,7 @@ namespace TagLibUWP
 	Platform::String^ Tag::discNumberKey(L"DISCNUMBER");
 	Platform::String^ Tag::genreKey(L"GENRE");
 	Platform::String^ Tag::titleKey(L"TITLE");
-	Platform::String^ Tag::trackKey(L"TRACKNUMBER");
+	Platform::String^ Tag::trackNumberKey(L"TRACKNUMBER");
 	Platform::String^ Tag::yearKey(L"DATE");
 
 	Tag::Tag()

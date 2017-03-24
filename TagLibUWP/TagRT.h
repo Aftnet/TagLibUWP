@@ -76,11 +76,11 @@ namespace TagLibUWP
 			void set(Platform::String^ value) { properties->Insert(titleKey, value); }
 		}
 
-		static property Platform::String^ TrackKey { Platform::String^ get() { return trackKey; }}
-		property unsigned int Track
+		static property Platform::String^ TrackNumberKey { Platform::String^ get() { return trackNumberKey; }}
+		property unsigned int TrackNumber
 		{
-			unsigned int get() { return Converter::PlatformStringToUInt(GetPropertyValue(trackKey)); }
-			void set(unsigned int value) { properties->Insert(trackKey, Converter::UIntToPlatformString(value)); }
+			unsigned int get() { return Converter::PlatformStringToUInt(GetPropertyValue(trackNumberKey)); }
+			void set(unsigned int value) { properties->Insert(trackNumberKey, Converter::UIntToPlatformString(value)); }
 		}
 
 		static property Platform::String^ YearKey { Platform::String^ get() { return yearKey; }}
@@ -113,7 +113,7 @@ namespace TagLibUWP
 		static Platform::String^ discNumberKey;
 		static Platform::String^ genreKey;
 		static Platform::String^ titleKey;
-		static Platform::String^ trackKey;
+		static Platform::String^ trackNumberKey;
 		static Platform::String^ yearKey;
 
 		PlatformPropertyMap^ properties;
