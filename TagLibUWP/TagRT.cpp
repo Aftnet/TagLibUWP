@@ -32,11 +32,13 @@ namespace TagLibUWP
 
 	Platform::String^ Tag::GetPropertyValue(Platform::String^ key)
 	{
+		auto fallbackOutput = ref new Platform::String();
 		if (properties->HasKey(key))
 		{
-			return properties->Lookup(key);
+			auto output = properties->Lookup(key);
+			return output == nullptr ? fallbackOutput : output;
 		}
 
-		return ref new Platform::String();
+		return fallbackOutput;
 	}
 }

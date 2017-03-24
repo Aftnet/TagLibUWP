@@ -104,12 +104,19 @@ namespace TagLibUWP.Test
             file = await CopyToTempFileAsync(file);
 
             var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
-
             var tag = fileInfo.Tag;
+
             tag.Album = TagTransformation(nameof(tag.Album));
+            tag.AlbumArtist = TagTransformation(nameof(tag.AlbumArtist));
             tag.Artist = TagTransformation(nameof(tag.Artist));
+            tag.Comment = TagTransformation(nameof(tag.Comment));
+            tag.Composer = TagTransformation(nameof(tag.Composer));
+            tag.Copyright = TagTransformation(nameof(tag.Copyright));
+            var newDiscNumber = 113U;
+            tag.DiscNumber = newDiscNumber;
             tag.Genre = TagTransformation(nameof(tag.Genre));
-            tag.Title = TagTransformation(nameof(tag.Title) + "あア亜");
+            var sampleTitle = nameof(tag.Title) + "あア亜";
+            tag.Title = TagTransformation(sampleTitle);
             tag.Comment = TagTransformation(nameof(tag.Comment));
             var newTrackNumber = 23U;
             tag.TrackNumber = newTrackNumber;
@@ -120,13 +127,19 @@ namespace TagLibUWP.Test
 
             fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             tag = fileInfo.Tag;
-            Assert.Equal(TagTransformation(nameof(tag.Album)), tag.Album);
-            Assert.Equal(TagTransformation(nameof(tag.Artist)), tag.Artist);
-            Assert.Equal(TagTransformation(nameof(tag.Genre)), tag.Genre);
-            Assert.Equal(TagTransformation(nameof(tag.Title) + "あア亜"), tag.Title);
-            Assert.Equal(TagTransformation(nameof(tag.Comment)), tag.Comment);
-            Assert.Equal(newTrackNumber, tag.TrackNumber);
-            Assert.Equal(newYear, tag.Year);
+            var tagProperties = tag.Properties;
+
+            AssertTagEqual(TagTransformation(nameof(Tag.Album)), tag.Album, tagProperties, Tag.AlbumKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.AlbumArtist)), tag.AlbumArtist, tagProperties, Tag.AlbumArtistKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Artist)), tag.Artist, tagProperties, Tag.ArtistKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Comment)), tag.Comment, tagProperties, Tag.CommentKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Composer)), tag.Composer, tagProperties, Tag.ComposerKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Copyright)), tag.Copyright, tagProperties, Tag.CopyrightKey);
+            AssertTagEqual(newDiscNumber, tag.DiscNumber, tagProperties, Tag.DiscNumberKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Genre)), tag.Genre, tagProperties, Tag.GenreKey);
+            AssertTagEqual(TagTransformation(sampleTitle), tag.Title, tagProperties, Tag.TitleKey);
+            AssertTagEqual(newTrackNumber, tag.TrackNumber, tagProperties, Tag.TrackNumberKey);
+            AssertTagEqual(newYear, tag.Year, tagProperties, Tag.YearKey);
 
             await file.DeleteAsync();
         }
@@ -253,7 +266,14 @@ namespace TagLibUWP.Test
         private static void AssertTagEqual(string expectedValue, string tag, IDictionary<string, string> propertiesDictionary, string tagKey)
         {
             Assert.Equal(expectedValue, tag);
-            Assert.Equal(expectedValue, propertiesDictionary[tagKey]);
+            if (!string.IsNullOrEmpty(expectedValue))
+            {
+                Assert.Equal(expectedValue, propertiesDictionary[tagKey]);
+            }
+            else
+            {
+                Assert.Equal(expectedValue, propertiesDictionary[tagKey]);
+            }
         }
 
         private static void AssertTagEqual(uint expectedValue, uint tag, IDictionary<string, string> propertiesDictionary, string tagKey)
