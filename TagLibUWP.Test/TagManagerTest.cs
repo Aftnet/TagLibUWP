@@ -61,31 +61,17 @@ namespace TagLibUWP.Test
             Assert.NotNull(tag);
             Assert.NotNull(tag.Properties);
 
-            Assert.Equal(nameof(tag.Album), tag.Album);
-            Assert.Equal(nameof(tag.Album), tagProperties["ALBUM"]);
-            Assert.Equal(nameof(tag.AlbumArtist), tag.AlbumArtist);
-            Assert.Equal(nameof(tag.AlbumArtist), tagProperties["ALBUMARTIST"]);
-            Assert.Equal(nameof(tag.Artist), tag.Artist);
-            Assert.Equal(nameof(tag.Artist), tagProperties["ARTIST"]);
-            Assert.Equal(nameof(tag.Comment), tag.Comment);
-            Assert.Equal(nameof(tag.Comment), tagProperties["COMMENT"]);
-            Assert.Equal(nameof(tag.Composer), tag.Composer);
-            Assert.Equal(nameof(tag.Composer), tagProperties["COMPOSER"]);
-            Assert.Equal(nameof(tag.Copyright), tag.Copyright);
-            Assert.Equal(nameof(tag.Copyright), tagProperties["COPYRIGHT"]);
-            Assert.Equal(67U, tag.DiscNumber);
-            Assert.Equal("67", tagProperties["DISCNUMBER"]);
-            Assert.Equal(nameof(tag.Genre), tag.Genre);
-            Assert.Equal(nameof(tag.Genre), tagProperties["GENRE"]);
-            var titleRef = nameof(tag.Title) + "あア亜";
-            Assert.Equal(titleRef, tag.Title);
-            Assert.Equal(titleRef, tagProperties["TITLE"]);
-            Assert.Equal(45U, tag.TrackNumber);
-            Assert.Equal("45", tagProperties["TRACKNUMBER"]);
-            Assert.Equal(2000U, tag.Year);
-            Assert.Equal("2000", tagProperties["DATE"]);
-
-            //Assert.Equal("Custom", tagProperties["CUSTOM"]);
+            AssertTagEqual(nameof(Tag.Album), tag.Album, tagProperties, Tag.AlbumKey);
+            AssertTagEqual(nameof(Tag.AlbumArtist), tag.AlbumArtist, tagProperties, Tag.AlbumArtistKey);
+            AssertTagEqual(nameof(Tag.Artist), tag.Artist, tagProperties, Tag.ArtistKey);
+            AssertTagEqual(nameof(Tag.Comment), tag.Comment, tagProperties, Tag.CommentKey);
+            AssertTagEqual(nameof(Tag.Composer), tag.Composer, tagProperties, Tag.ComposerKey);
+            AssertTagEqual(nameof(Tag.Copyright), tag.Copyright, tagProperties, Tag.CopyrightKey);
+            AssertTagEqual(67U, tag.DiscNumber, tagProperties, Tag.DiscNumberKey);
+            AssertTagEqual(nameof(Tag.Genre), tag.Genre, tagProperties, Tag.GenreKey);
+            AssertTagEqual(nameof(Tag.Title) + "あア亜", tag.Title, tagProperties, Tag.TitleKey);
+            AssertTagEqual(45U, tag.TrackNumber, tagProperties, Tag.TrackNumberKey);
+            AssertTagEqual(2000U, tag.Year, tagProperties, Tag.YearKey);
         }
 
         [Theory(DisplayName = "Longer tag writing"), MemberData(nameof(SupportedAudioFileNames))]
@@ -262,6 +248,18 @@ namespace TagLibUWP.Test
             var output = new byte[stream.Length];
             await stream.ReadAsync(output, 0, output.Length);
             return output;
+        }
+
+        private static void AssertTagEqual(string expectedValue, string tag, IDictionary<string, string> propertiesDictionary, string tagKey)
+        {
+            Assert.Equal(expectedValue, tag);
+            Assert.Equal(expectedValue, propertiesDictionary[tagKey]);
+        }
+
+        private static void AssertTagEqual(uint expectedValue, uint tag, IDictionary<string, string> propertiesDictionary, string tagKey)
+        {
+            Assert.Equal(expectedValue, tag);
+            Assert.Equal(expectedValue, uint.Parse(propertiesDictionary[tagKey]));
         }
     }
 }
