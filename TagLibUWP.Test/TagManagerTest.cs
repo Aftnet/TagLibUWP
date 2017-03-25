@@ -272,7 +272,7 @@ namespace TagLibUWP.Test
             }
             else
             {
-                Assert.Equal(expectedValue, propertiesDictionary[tagKey]);
+                Assert.False(propertiesDictionary.ContainsKey(tagKey));
             }
         }
 
