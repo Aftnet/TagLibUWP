@@ -100,52 +100,66 @@ namespace TagLibUWP.Test
 
             var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             var tag = fileInfo.Tag;
+            var properties = tag.Properties;
 
             tag.Album = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Album)));
+            Assert.False(properties.ContainsKey(nameof(tag.Album)));
             tag.AlbumArtist = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.AlbumArtist)));
+            Assert.False(properties.ContainsKey(nameof(tag.AlbumArtist)));
             tag.Artist = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Artist)));
+            Assert.False(properties.ContainsKey(nameof(tag.Artist)));
             tag.Comment = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Comment)));
+            Assert.False(properties.ContainsKey(nameof(tag.Comment)));
             tag.Composer = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Composer)));
+            Assert.False(properties.ContainsKey(nameof(tag.Composer)));
             tag.Copyright = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Copyright)));
+            Assert.False(properties.ContainsKey(nameof(tag.Copyright)));
             tag.DiscNumber = 0;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.DiscNumber)));
+            Assert.False(properties.ContainsKey(nameof(tag.DiscNumber)));
             tag.Genre = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Genre)));
+            Assert.False(properties.ContainsKey(nameof(tag.Genre)));
             tag.Title = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Title)));
+            Assert.False(properties.ContainsKey(nameof(tag.Title)));
             tag.Comment = string.Empty;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Comment)));
+            Assert.False(properties.ContainsKey(nameof(tag.Comment)));
             tag.TrackNumber = 0;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.TrackNumber)));
+            Assert.False(properties.ContainsKey(nameof(tag.TrackNumber)));
             tag.Year = 0;
-            Assert.False(tag.Properties.ContainsKey(nameof(tag.Year)));
+            Assert.False(properties.ContainsKey(nameof(tag.Year)));
 
-            //tag.Properties.Clear();
+            //properties.Clear();
             await Task.Run(() => TagManager.WriteFile(file, tag));
 
             fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             tag = fileInfo.Tag;
+            properties = tag.Properties;
 
-            //Assert.Empty(tag.Properties);
+            //Assert.Empty(properties);
 
             Assert.Empty(tag.Album);
+            Assert.False(properties.ContainsKey(nameof(tag.Album)));
             Assert.Empty(tag.AlbumArtist);
+            Assert.False(properties.ContainsKey(nameof(tag.AlbumArtist)));
             Assert.Empty(tag.Artist);
+            Assert.False(properties.ContainsKey(nameof(tag.Artist)));
             Assert.Empty(tag.Comment);
+            Assert.False(properties.ContainsKey(nameof(tag.Comment)));
             Assert.Empty(tag.Composer);
+            Assert.False(properties.ContainsKey(nameof(tag.Composer)));
             Assert.Empty(tag.Copyright);
+            Assert.False(properties.ContainsKey(nameof(tag.Copyright)));
             Assert.Equal(0U, tag.DiscNumber);
+            Assert.False(properties.ContainsKey(nameof(tag.DiscNumber)));
             Assert.Empty(tag.Genre);
+            Assert.False(properties.ContainsKey(nameof(tag.Genre)));
             Assert.Empty(tag.Title);
+            Assert.False(properties.ContainsKey(nameof(tag.Title)));
             Assert.Empty(tag.Comment);
+            Assert.False(properties.ContainsKey(nameof(tag.Comment)));
             Assert.Equal(0U, tag.TrackNumber);
+            Assert.False(properties.ContainsKey(nameof(tag.TrackNumber)));
             Assert.Equal(0U, tag.Year);
+            Assert.False(properties.ContainsKey(nameof(tag.Year)));
         }
 
         public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
