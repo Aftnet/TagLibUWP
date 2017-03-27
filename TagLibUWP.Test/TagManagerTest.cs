@@ -126,12 +126,26 @@ namespace TagLibUWP.Test
             tag.Year = 0;
             Assert.False(tag.Properties.ContainsKey(nameof(tag.Year)));
 
-            tag.Properties.Clear();
+            //tag.Properties.Clear();
             await Task.Run(() => TagManager.WriteFile(file, tag));
 
             fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             tag = fileInfo.Tag;
-            Assert.Empty(tag.Properties);
+
+            //Assert.Empty(tag.Properties);
+
+            Assert.Empty(tag.Album);
+            Assert.Empty(tag.AlbumArtist);
+            Assert.Empty(tag.Artist);
+            Assert.Empty(tag.Comment);
+            Assert.Empty(tag.Composer);
+            Assert.Empty(tag.Copyright);
+            Assert.Equal(0U, tag.DiscNumber);
+            Assert.Empty(tag.Genre);
+            Assert.Empty(tag.Title);
+            Assert.Empty(tag.Comment);
+            Assert.Equal(0U, tag.TrackNumber);
+            Assert.Equal(0U, tag.Year);
         }
 
         public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
