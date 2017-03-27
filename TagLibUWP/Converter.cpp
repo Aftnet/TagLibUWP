@@ -37,7 +37,7 @@ namespace TagLibUWP
 		return value->ToPictureMap();
 	}
 
-	TagLib::SimplePropertyMap Converter::PlatformToTagLibMap(PlatformPropertyMap^ value)
+	TagLib::PropertyMap Converter::PlatformToTagLibMap(PlatformPropertyMap^ value)
 	{
 		TagLib::SimplePropertyMap convertedMap;
 		for each (auto item in value)

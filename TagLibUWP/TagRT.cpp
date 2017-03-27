@@ -20,14 +20,20 @@ namespace TagLibUWP
 
 	Tag::Tag(const TagLib::Tag& tag)
 	{
-		properties = Converter::TagLibToPlatformMap(tag.properties());
-		Image = Picture::FromPictureMape(tag.pictures());
+		auto tagLibProperties = tag.properties();
+		properties = Converter::TagLibToPlatformMap(tagLibProperties);
+
+		auto tagLibPictures = tag.pictures();
+		Image = Picture::FromPictureMape(tagLibPictures);
 	}
 
 	void Tag::UpdateTag(TagLib::Tag& tag)
 	{
-		tag.setProperties(Converter::PlatformToTagLibMap(properties));
-		tag.setPictures(Converter::PictureToPictureMap(Image));
+		auto tagLibProperties = Converter::PlatformToTagLibMap(properties);
+		tag.setProperties(tagLibProperties);
+
+		auto tagLibPictures = Converter::PictureToPictureMap(Image);
+		tag.setPictures(tagLibPictures);
 	}
 
 	Platform::String^ Tag::GetPropertyValue(Platform::String^ key)

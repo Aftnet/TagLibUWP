@@ -22,7 +22,7 @@ namespace TagLibUWP
 
 		static TagLib::PictureMap PictureToPictureMap(Picture^ value);
 
-		static TagLib::SimplePropertyMap PlatformToTagLibMap(PlatformPropertyMap^ value);
+		static TagLib::PropertyMap PlatformToTagLibMap(PlatformPropertyMap^ value);
 		static PlatformPropertyMap^ TagLibToPlatformMap(const TagLib::SimplePropertyMap& value);
 
 		static Platform::String^ UIntToPlatformString(unsigned int value);
