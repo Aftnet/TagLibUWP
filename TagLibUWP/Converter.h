@@ -14,6 +14,8 @@ namespace TagLibUWP
 	static class Converter
 	{
 	public:
+		static const unsigned int DefaultIntValue = 0;
+
 		Converter();
 		~Converter();
 
@@ -27,9 +29,6 @@ namespace TagLibUWP
 
 		static Platform::String^ UIntToPlatformString(unsigned int value);
 		static unsigned int PlatformStringToUInt(Platform::String^ value);
-
-	private:
-		static const unsigned int defaultIntValue = 0;
 	};
 }
 

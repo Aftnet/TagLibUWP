@@ -75,7 +75,7 @@ namespace TagLibUWP
 
 	unsigned int Converter::PlatformStringToUInt(Platform::String^ value)
 	{
-		unsigned int output = defaultIntValue;
+		unsigned int output = DefaultIntValue;
 		try
 		{
 			output = std::stoi(value->Data());

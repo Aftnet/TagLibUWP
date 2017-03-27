@@ -93,9 +93,45 @@ namespace TagLibUWP.Test
         }
 
         [Theory(DisplayName = "Empty tag writing"), MemberData(nameof(SupportedAudioFileNames))]
-        public Task EmptyTagWritingWorks(string fileName)
+        public async Task EmptyTagWritingWorks(string fileName)
         {
-            return TagWritingTest(fileName, d => string.Empty);
+            var file = await GetTestMediaFileAsync(fileName);
+            file = await CopyToTempFileAsync(file);
+
+            var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            var tag = fileInfo.Tag;
+
+            tag.Album = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Album)));
+            tag.AlbumArtist = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.AlbumArtist)));
+            tag.Artist = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Artist)));
+            tag.Comment = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Comment)));
+            tag.Composer = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Composer)));
+            tag.Copyright = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Copyright)));
+            tag.DiscNumber = 0;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.DiscNumber)));
+            tag.Genre = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Genre)));
+            tag.Title = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Title)));
+            tag.Comment = string.Empty;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Comment)));
+            tag.TrackNumber = 0;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.TrackNumber)));
+            tag.Year = 0;
+            Assert.False(tag.Properties.ContainsKey(nameof(tag.Year)));
+
+            tag.Properties.Clear();
+            await Task.Run(() => TagManager.WriteFile(file, tag));
+
+            fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            tag = fileInfo.Tag;
+            Assert.Empty(tag.Properties);
         }
 
         public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)

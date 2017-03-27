@@ -47,4 +47,34 @@ namespace TagLibUWP
 
 		return fallbackOutput;
 	}
+
+	void Tag::SetPropertyValue(Platform::String^ key, Platform::String^ value)
+	{
+		if (value == nullptr || value->IsEmpty())
+		{
+			if (properties->HasKey(key))
+			{
+				properties->Remove(key);
+			}
+		}
+		else
+		{
+			properties->Insert(key, value);
+		}
+	}
+
+	void Tag::SetPropertyValue(Platform::String^ key, unsigned int value)
+	{
+		if (value == Converter::DefaultIntValue)
+		{
+			if (properties->HasKey(key))
+			{
+				properties->Remove(key);
+			}
+		}
+		else
+		{
+			properties->Insert(key, Converter::UIntToPlatformString(value));
+		}
+	}
 }
