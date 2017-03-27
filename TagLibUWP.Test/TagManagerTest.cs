@@ -92,6 +92,52 @@ namespace TagLibUWP.Test
             return TagWritingTest(fileName, d => d.Substring(2));
         }
 
+        public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
+        {
+            var file = await GetTestMediaFileAsync(fileName);
+            file = await CopyToTempFileAsync(file);
+
+            var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            var tag = fileInfo.Tag;
+
+            tag.Album = TagTransformation(nameof(tag.Album));
+            tag.AlbumArtist = TagTransformation(nameof(tag.AlbumArtist));
+            tag.Artist = TagTransformation(nameof(tag.Artist));
+            tag.Comment = TagTransformation(nameof(tag.Comment));
+            tag.Composer = TagTransformation(nameof(tag.Composer));
+            tag.Copyright = TagTransformation(nameof(tag.Copyright));
+            var newDiscNumber = 113U;
+            tag.DiscNumber = newDiscNumber;
+            tag.Genre = TagTransformation(nameof(tag.Genre));
+            var sampleTitle = nameof(tag.Title) + "あア亜";
+            tag.Title = TagTransformation(sampleTitle);
+            tag.Comment = TagTransformation(nameof(tag.Comment));
+            var newTrackNumber = 23U;
+            tag.TrackNumber = newTrackNumber;
+            var newYear = 2096U;
+            tag.Year = newYear;
+
+            await Task.Run(() => TagManager.WriteFile(file, tag));
+
+            fileInfo = await Task.Run(() => TagManager.ReadFile(file));
+            tag = fileInfo.Tag;
+            var tagProperties = tag.Properties;
+
+            AssertTagEqual(TagTransformation(nameof(Tag.Album)), tag.Album, tagProperties, Tag.AlbumKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.AlbumArtist)), tag.AlbumArtist, tagProperties, Tag.AlbumArtistKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Artist)), tag.Artist, tagProperties, Tag.ArtistKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Comment)), tag.Comment, tagProperties, Tag.CommentKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Composer)), tag.Composer, tagProperties, Tag.ComposerKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Copyright)), tag.Copyright, tagProperties, Tag.CopyrightKey);
+            AssertTagEqual(newDiscNumber, tag.DiscNumber, tagProperties, Tag.DiscNumberKey);
+            AssertTagEqual(TagTransformation(nameof(Tag.Genre)), tag.Genre, tagProperties, Tag.GenreKey);
+            AssertTagEqual(TagTransformation(sampleTitle), tag.Title, tagProperties, Tag.TitleKey);
+            AssertTagEqual(newTrackNumber, tag.TrackNumber, tagProperties, Tag.TrackNumberKey);
+            AssertTagEqual(newYear, tag.Year, tagProperties, Tag.YearKey);
+
+            await file.DeleteAsync();
+        }
+
         [Theory(DisplayName = "Empty tag writing"), MemberData(nameof(SupportedAudioFileNames))]
         public async Task EmptyTagWritingWorks(string fileName)
         {
@@ -162,7 +208,8 @@ namespace TagLibUWP.Test
             Assert.False(properties.ContainsKey(nameof(tag.Year)));
         }
 
-        public async Task TagWritingTest(string fileName, Func<string, string> TagTransformation)
+        [Theory(DisplayName = "Non-standard tags work"), MemberData(nameof(SupportedAudioFileNames))]
+        public async Task NonStandardTagsWork(string fileName)
         {
             var file = await GetTestMediaFileAsync(fileName);
             file = await CopyToTempFileAsync(file);
@@ -170,42 +217,18 @@ namespace TagLibUWP.Test
             var fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             var tag = fileInfo.Tag;
 
-            tag.Album = TagTransformation(nameof(tag.Album));
-            tag.AlbumArtist = TagTransformation(nameof(tag.AlbumArtist));
-            tag.Artist = TagTransformation(nameof(tag.Artist));
-            tag.Comment = TagTransformation(nameof(tag.Comment));
-            tag.Composer = TagTransformation(nameof(tag.Composer));
-            tag.Copyright = TagTransformation(nameof(tag.Copyright));
-            var newDiscNumber = 113U;
-            tag.DiscNumber = newDiscNumber;
-            tag.Genre = TagTransformation(nameof(tag.Genre));
-            var sampleTitle = nameof(tag.Title) + "あア亜";
-            tag.Title = TagTransformation(sampleTitle);
-            tag.Comment = TagTransformation(nameof(tag.Comment));
-            var newTrackNumber = 23U;
-            tag.TrackNumber = newTrackNumber;
-            var newYear = 2096U;
-            tag.Year = newYear;
+            var unsupportedTagValue = "UNSUPPORTEDTAGLOL";
+            tag.Properties[nameof(unsupportedTagValue)] = unsupportedTagValue;
+            Assert.True(tag.Properties.ContainsKey(nameof(unsupportedTagValue)));
 
             await Task.Run(() => TagManager.WriteFile(file, tag));
 
             fileInfo = await Task.Run(() => TagManager.ReadFile(file));
             tag = fileInfo.Tag;
-            var tagProperties = tag.Properties;
-
-            AssertTagEqual(TagTransformation(nameof(Tag.Album)), tag.Album, tagProperties, Tag.AlbumKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.AlbumArtist)), tag.AlbumArtist, tagProperties, Tag.AlbumArtistKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.Artist)), tag.Artist, tagProperties, Tag.ArtistKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.Comment)), tag.Comment, tagProperties, Tag.CommentKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.Composer)), tag.Composer, tagProperties, Tag.ComposerKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.Copyright)), tag.Copyright, tagProperties, Tag.CopyrightKey);
-            AssertTagEqual(newDiscNumber, tag.DiscNumber, tagProperties, Tag.DiscNumberKey);
-            AssertTagEqual(TagTransformation(nameof(Tag.Genre)), tag.Genre, tagProperties, Tag.GenreKey);
-            AssertTagEqual(TagTransformation(sampleTitle), tag.Title, tagProperties, Tag.TitleKey);
-            AssertTagEqual(newTrackNumber, tag.TrackNumber, tagProperties, Tag.TrackNumberKey);
-            AssertTagEqual(newYear, tag.Year, tagProperties, Tag.YearKey);
-
-            await file.DeleteAsync();
+            if (tag.Properties.ContainsKey(nameof(unsupportedTagValue)))
+            {
+                Assert.Equal(unsupportedTagValue, tag.Properties[nameof(unsupportedTagValue)]);
+            }
         }
 
         [Theory(DisplayName = "Image reading"), MemberData(nameof(SupportedAudioFileNames))]
